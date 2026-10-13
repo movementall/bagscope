@@ -152,9 +152,10 @@
       <h1>Every Phantom wallet. <em>One real number.</em></h1>
       <p class="lede">Bagscope is a free Windows app for Solana meme coin holders. It adds up all your wallets from on-chain balances, works out what you actually paid, and shows the warning signs before a coin rugs. It is view-only and can never move your funds.</p>
       <div class="cta">
-        <a class="btn primary" href="https://github.com/movementall/bagscope/releases/latest/download/Bagscope.zip" download>Download for Windows</a>
+        <a class="btn primary" id="download" href="#top">Download for Windows</a>
         <a class="btn" href="https://github.com/movementall/bagscope" target="_blank" rel="noopener">Read the source code</a>
       </div>
+      <p class="status" id="dlstatus" role="status"></p>
       <p class="meta">Windows 10 and 11, 64-bit · 107 MB · free and open source · no account, no sign-up</p>
       <figure class="shot">
         <img src="shots/dashboard.png" width="1320" height="860" alt="Bagscope dashboard: total balance across wallets, 24h to 1-year performance tiles, a portfolio chart and the allocation bar">
@@ -327,6 +328,48 @@
 </div>
 
 <script>
+  // The installer is stored on this site in 14 parts (GitHub limits single uploads).
+  // The button fetches them, joins them into one file and hands it to the browser to save.
+  const PARTS = 14
+  const SIZE = 112153333
+  const dlButton = document.getElementById('download')
+  const dlStatus = document.getElementById('dlstatus')
+  let dlBusy = false
+  dlButton.addEventListener('click', async (e) => {
+    e.preventDefault()
+    e.stopImmediatePropagation()
+    if (dlBusy) return
+    dlBusy = true
+    const label = dlButton.textContent
+    try {
+      const parts = []
+      let got = 0
+      for (let i = 1; i <= PARTS; i++) {
+        const res = await fetch('dl/p' + i + '.bin')
+        if (!res.ok) throw new Error('part ' + i + ' answered ' + res.status)
+        const buf = await res.arrayBuffer()
+        parts.push(buf)
+        got += buf.byteLength
+        dlButton.textContent = 'Downloading ' + Math.round((got / SIZE) * 100) + '%'
+        dlStatus.textContent = Math.round(got / 1048576) + ' of ' + Math.round(SIZE / 1048576) + ' MB'
+      }
+      if (got !== SIZE) throw new Error('the file arrived incomplete')
+      const url = URL.createObjectURL(new Blob(parts, { type: 'application/zip' }))
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'Bagscope.zip'
+      document.body.append(a)
+      a.click()
+      a.remove()
+      setTimeout(() => URL.revokeObjectURL(url), 120000)
+      dlStatus.textContent = 'Bagscope.zip is in your Downloads folder. Open it and run "Install Bagscope".'
+    } catch (err) {
+      dlStatus.textContent = 'The download could not finish (' + (err && err.message ? err.message : 'network error') + '). Check your connection and press the button again.'
+    } finally {
+      dlButton.textContent = label
+      dlBusy = false
+    }
+  }, true)
   // Smooth scrolling for the section links. Done in script as well as CSS so it behaves
   // the same wherever the page is embedded, and respects the reduced-motion setting.
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches
