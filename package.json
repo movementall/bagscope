@@ -1,0 +1,92 @@
+{
+  "name": "bagscope",
+  "productName": "Bagscope",
+  "version": "0.1.0",
+  "description": "Multi-wallet Phantom portfolio tracker for meme coin holders",
+  "author": "Bagscope",
+  "main": "out/main/index.js",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "start": "electron-vite build && electron .",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "icon": "node scripts/make-icon.mjs",
+    "licenses": "node scripts/licenses.mjs",
+    "dist": "node scripts/licenses.mjs && electron-vite build && electron-builder --win nsis --x64",
+    "dist:dir": "electron-vite build && electron-builder --win dir --x64"
+  },
+  "build": {
+    "appId": "com.bagscope.app",
+    "productName": "Bagscope",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "out/**/*"
+    ],
+    "asar": false,
+    "extraResources": [
+      { "from": "build/icon.ico", "to": "icon.ico" },
+      { "from": "build/THIRD-PARTY-NOTICES.txt", "to": "THIRD-PARTY-NOTICES.txt" },
+      { "from": "LICENSE", "to": "LICENSE.bagscope.txt" }
+    ],
+    "npmRebuild": false,
+    "electronDist": "node_modules/electron/dist",
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Bagscope",
+      "uninstallDisplayName": "Bagscope",
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false,
+      "include": "build/installer.nsh",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerSidebar": "build/installerSidebar.bmp",
+      "uninstallerSidebar": "build/installerSidebar.bmp",
+      "artifactName": "Bagscope-Setup-${version}.${ext}"
+    }
+  },
+  "devDependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/space-grotesk": "^5.3.0",
+    "@solana/wallet-adapter-base": "^0.9.28",
+    "@solana/wallet-adapter-phantom": "^0.9.30",
+    "@solana/web3.js": "^1.99.0",
+    "@types/node": "^26.6.5",
+    "@types/qrcode": "^1.5.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^5.2.0",
+    "buffer": "^6.0.3",
+    "electron": "^44.7.0",
+    "electron-builder": "^26.15.3",
+    "electron-vite": "^5.0.0",
+    "lucide-react": "^1.55.0",
+    "motion": "^14.1.0",
+    "qrcode": "^1.5.4",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "tweetnacl": "^1.0.3",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.7",
+    "zustand": "^5.0.15"
+  }
+}
