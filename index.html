@@ -657,7 +657,7 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
       const top = H * 0.2, bottom = H * 0.78, volTop = H * 0.84, volBottom = H * 0.95;
       const shown = 8 + clamp(p * 1.08, 0, 1) * (n - 8);
       const full = Math.floor(shown), frac = shown - full, last = Math.max(0, Math.ceil(shown) - 1);
-      const visible = narrow() ? 30 : 56;
+      const visible = narrow() ? 30 : n;
       const start = Math.max(0, Math.min(n - visible, Math.ceil(shown) - visible + 3));
       const cw = (W - pad - right) / visible;
       let lo = Infinity, hi = -Infinity, vmax = 0;
@@ -707,17 +707,18 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
       }
 
       // entry marker and the profit bracket from entry to the peak
-      if (shown > marks.entry + 1 && marks.entry >= start) {
-        const ex = X(marks.entry), ey = y(C[marks.entry].c);
+      // these stay on screen once reached, even after their candle has scrolled off the left edge
+      if (shown > marks.entry + 1) {
+        const onScreen = marks.entry >= start, ex = onScreen ? X(marks.entry) : pad, ey = y(C[marks.entry].c);
         ctx.strokeStyle = 'rgba(62,227,154,.45)'; ctx.setLineDash([2, 6]); ctx.lineWidth = 1.5;
         ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(W - right + 8, ey); ctx.stroke(); ctx.setLineDash([]);
-        ctx.fillStyle = UP; ctx.beginPath(); ctx.arc(ex, ey, 6, 0, Math.PI * 2); ctx.fill();
-        pill(ex + 12, ey + 22, 'Entry · ' + fmt(C[marks.entry].c), '#0f2a1d', UP);
-        if (shown > marks.pnl + 1 && marks.pnl >= start) {
-          const px = X(marks.pnl), py = y(C[marks.pnl].h);
+        if (onScreen) { ctx.fillStyle = UP; ctx.beginPath(); ctx.arc(ex, ey, 6, 0, Math.PI * 2); ctx.fill(); }
+        pill(ex + (onScreen ? 12 : 4), ey + 22, 'Entry · ' + fmt(C[marks.entry].c), '#0f2a1d', UP);
+        if (shown > marks.pnl + 1) {
+          const bx = (marks.pnl >= start ? X(marks.pnl) : pad) + cw + 6, py = y(C[marks.pnl].h);
           ctx.strokeStyle = UP; ctx.lineWidth = 2;
-          ctx.beginPath(); ctx.moveTo(px + cw, ey); ctx.lineTo(px + cw + 10, ey); ctx.lineTo(px + cw + 10, py); ctx.lineTo(px + cw, py); ctx.stroke();
-          pill(px + cw + 18, (ey + py) / 2, '+' + Math.round((C[marks.pnl].h / C[marks.entry].c - 1) * 100) + '% since entry', UP, '#04140c');
+          ctx.beginPath(); ctx.moveTo(bx - 6, ey); ctx.lineTo(bx, ey); ctx.lineTo(bx, py); ctx.lineTo(bx - 6, py); ctx.stroke();
+          pill(bx + 10, (ey + py) / 2, '+' + Math.round((C[marks.pnl].h / C[marks.entry].c - 1) * 100) + '% since entry', UP, '#04140c');
         }
       }
 
