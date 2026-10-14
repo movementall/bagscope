@@ -1,0 +1,32 @@
+/* Shared style for the legal pages: one readable column in the site's colours and type. */
+:root{--bg:#070a10;--panel:#0e1420;--raised:#151d2c;--ink:#eef3f1;--soft:#8d99ab;--up:#3ee39a;--up-ink:#04140c;
+  --display:'Bricolage Grotesque','Arial Black','Segoe UI',sans-serif;--text:'Geist','Segoe UI Variable Text','Segoe UI',system-ui,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font:17px/1.65 var(--text);-webkit-font-smoothing:antialiased;padding-inline:clamp(16px,5vw,64px);padding-block:0 64px}
+a{color:var(--up)}
+:focus-visible{outline:2px solid var(--up);outline-offset:3px}
+.skip{position:absolute;left:12px;top:-60px;background:var(--up);color:var(--up-ink);padding:10px 16px;border-radius:8px;font-weight:600;text-decoration:none}
+.skip:focus{top:12px}
+header{display:flex;align-items:center;gap:20px;padding-block:20px;flex-wrap:wrap;max-width:780px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:10px;font:700 20px var(--display);letter-spacing:-0.03em;color:var(--ink);text-decoration:none;margin-right:auto}
+.mark{width:30px;height:30px;border-radius:8px;background:var(--up);color:var(--up-ink);display:grid;place-items:center;font:800 16px var(--display)}
+main{max-width:780px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);letter-spacing:-0.03em;line-height:1.1;text-wrap:balance}
+h1{font-size:clamp(36px,6vw,56px);margin:40px 0 8px}
+h2{font-size:clamp(23px,2.6vw,28px);margin:44px 0 10px}
+h3{font-size:20px;margin:28px 0 6px}
+p,li{max-width:70ch}
+ul{padding-left:22px}
+li{margin-block:6px}
+.updated{color:var(--soft);font-size:15px}
+.box{background:var(--panel);border-radius:12px;padding:18px 22px;margin-block:20px}
+.box p{margin:6px 0}
+table{border-collapse:collapse;width:100%;font-size:15.5px;margin-block:12px}
+th,td{text-align:left;vertical-align:top;padding:10px 12px}
+th{color:var(--soft);font-weight:500}
+tbody tr:nth-child(odd){background:var(--panel)}
+.table{overflow-x:auto}
+footer{max-width:780px;margin:56px auto 0;display:flex;flex-wrap:wrap;gap:8px 20px;font-size:15px}
+footer a{color:var(--ink)}
+footer a[aria-current]{color:var(--up)}
