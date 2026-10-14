@@ -10,9 +10,7 @@
 <meta name="theme-color" content="#070a10">
 <link rel="icon" href="icon.png">
 <title>Bagscope</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/fonts.css">
 <style>
 /* Layout: a plain hero, then a pinned chart that draws itself and carries the features,
    then real screenshots and plain sections that build in as they scroll into view. */
@@ -59,6 +57,18 @@ html.lenis,html.lenis body{height:auto}
 .hero-card{background:var(--panel);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:10px;box-shadow:0 30px 80px rgba(0,0,0,.45);min-width:0;font-variant-numeric:tabular-nums}
 .hc-top{display:flex;justify-content:space-between;font-size:14px;color:var(--soft)}
 .hc-ex{background:var(--raised);padding:2px 10px;border-radius:999px;font-size:12px}
+.hc-tools{display:flex;gap:8px;align-items:center}
+.hc-pause{background:var(--raised);color:var(--ink);border:0;border-radius:999px;padding:4px 12px;min-height:28px;font:500 12px var(--text);cursor:pointer}
+.skip{position:absolute;left:12px;top:-60px;z-index:50;background:var(--up);color:var(--up-ink);padding:10px 16px;border-radius:8px;font-weight:600;text-decoration:none}
+.skip:focus{top:12px}
+.menu{display:none;position:relative}
+.menu summary{list-style:none;cursor:pointer;min-height:40px;display:flex;align-items:center;padding:0 14px;border-radius:999px;background:var(--raised);font-size:15px}
+.menu summary::-webkit-details-marker{display:none}
+.menu-list{position:absolute;right:0;top:48px;background:var(--panel);border-radius:12px;padding:8px;display:flex;flex-direction:column;min-width:200px;box-shadow:0 18px 50px rgba(0,0,0,.5)}
+.menu-list a{padding:12px 14px;text-decoration:none;border-radius:8px}
+.menu-list a:hover{background:var(--raised)}
+.legal{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:14.5px}
+.legal a{color:var(--ink)}
 .hc-total{font:800 clamp(36px,4vw,56px)/1 var(--display);letter-spacing:-0.04em}
 .hc-change{font-size:15px;color:var(--up)}
 #mini{width:100%;height:150px;display:block;margin-block:6px}
@@ -180,6 +190,7 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
 .only-phone{display:none}
 @media (max-width:900px){
   .top nav{display:none}
+  .menu{display:block}
   .safety{grid-template-columns:repeat(2,minmax(0,1fr))}
   .row,.install{grid-template-columns:minmax(0,1fr)}
   .row.flip .text{order:0}
@@ -209,8 +220,9 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
 </head>
 <body>
 
+<a class="skip" href="#main">Skip to content</a>
 <header class="top gut" id="topbar">
-  <a class="brand" href="#hero"><span class="mark">B</span>Bagscope</a>
+  <a class="brand" href="#hero" aria-label="Bagscope, back to top"><span class="mark" aria-hidden="true">B</span>Bagscope</a>
   <nav aria-label="Sections">
     <a href="#features">Features</a>
     <a href="#safety">Safety</a>
@@ -218,15 +230,25 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
     <a href="#questions">Questions</a>
     <a href="https://github.com/movementall/bagscope" target="_blank" rel="noopener">Source code</a>
   </nav>
+  <details class="menu">
+    <summary aria-label="Open menu">Menu</summary>
+    <div class="menu-list">
+      <a href="#features">Features</a>
+      <a href="#safety">Safety</a>
+      <a href="#install">Install</a>
+      <a href="#questions">Questions</a>
+      <a href="https://github.com/movementall/bagscope" target="_blank" rel="noopener">Source code</a>
+    </div>
+  </details>
   <a class="btn small dl" href="#install">Download</a>
 </header>
 
-<main>
+<main id="main">
   <!-- Hero -->
   <section id="hero" class="hero">
       <div class="hero-copy gut">
         <h1 id="title"><span class="ln">Every wallet.</span><span class="ln">One real total.</span></h1>
-        <p class="lede">A free Windows app for Solana meme coin holders. It adds up every Phantom wallet from on-chain balances, fills in what you paid, and shows the warning signs before a coin rugs. View-only: it can never move your funds.</p>
+        <p class="lede">A free Windows app for Solana meme coin holders. It adds up the Phantom wallets you choose from on-chain balances, fills in what you paid, and flags common rug-pull warning signs. View-only: it has no feature that can send, swap or sign, so it cannot move your funds.</p>
         <div class="cta">
           <a class="btn dl" id="download" href="#install">Download for Windows</a>
           <a class="btn ghost" href="https://github.com/movementall/bagscope" target="_blank" rel="noopener">Read the source code</a>
@@ -234,8 +256,8 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
         <p class="status" id="dlstatus" role="status"></p>
         <p class="meta">Windows 10 and 11 · 107 MB · free and open source · no account</p>
       </div>
-      <div class="hero-card" id="heroCard" aria-label="Example of the Bagscope dashboard">
-        <div class="hc-top"><span>Total · 3 wallets</span><span class="hc-ex">Example</span></div>
+      <div class="hero-card" id="heroCard" role="group" aria-label="Example of the Bagscope dashboard, with made-up numbers">
+        <div class="hc-top"><span>Total · 3 wallets</span><span class="hc-tools"><span class="hc-ex">Example</span><button class="hc-pause" id="hcPause" type="button" aria-pressed="false">Pause</button></span></div>
         <div class="hc-total" id="hcTotal">$53,593.65</div>
         <div class="hc-change" id="hcChange">+$1,284.20 (+2.46%) today</div>
         <canvas id="mini" height="150"></canvas>
@@ -255,7 +277,7 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
     <h2>Looks at your bags. Never touches them.</h2>
     <div><b>View-only</b><span>Reads public addresses. There is no feature that sends a transaction.</span></div>
     <div><b>No seed phrase, ever</b><span>There is nowhere to type one. If something asks, it is not Bagscope.</span></div>
-    <div><b>Stays on your PC</b><span>Wallets, settings and history are stored locally. No account, no tracking.</span></div>
+    <div><b>Stays on your PC</b><span>Wallets, settings and history are stored locally. No account and no tracking by Bagscope. Balances and prices are fetched from public data services.</span></div>
     <div><b>Open source</b><span>Every line is public, so you do not have to take anyone's word for it.</span></div>
   </section>
 
@@ -266,7 +288,7 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
         <h2>One coin, the way Bagscope sees it.</h2>
         <ol class="rail" id="rail">
           <li class="on"><b>Your entry, filled in</b><span>Bagscope reads your own swap history and marks where you bought. You type nothing.</span></li>
-          <li><b>An alert the moment it moves</b><span>Set "market cap above 5m" once. A Windows notification fires as it crosses.</span></li>
+          <li><b>An alert when it moves</b><span>Set "market cap above 5m" once. A Windows notification appears on the next price check after it crosses.</span></li>
           <li><b>Profit per coin</b><span>Average entry, realized and unrealized profit, all in one total.</span></li>
           <li><b>A rug check before it is too late</b><span>Six checks per coin. Here the developer wallet sold 40% of its supply.</span></li>
         </ol>
@@ -287,13 +309,13 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
   <section class="feat gut" id="features">
     <div class="feat-head" data-reveal>
       <h2>For people with more coins than they can keep in their head</h2>
-      <p>Phantom shows one account at a time and happily values an illiquid airdrop at a fantasy price. Bagscope answers the questions that matter.</p>
+      <p>Wallet apps show one account at a time, and a coin with almost no liquidity can show a value nobody could actually sell for. Bagscope answers the questions that matter.</p>
     </div>
 
     <div class="row" data-reveal>
       <div class="text">
         <span class="q">What am I worth?</span>
-        <h3>A total you can trust</h3>
+        <h3>A total built from on-chain data</h3>
         <p>Balances come straight from the Solana network for every wallet you add, priced from the pool with the deepest liquidity.</p>
         <ul>
           <li>Coins with no real price, or more value than could ever be sold, are left out, and each says why</li>
@@ -321,7 +343,7 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
     <div class="row" data-reveal>
       <div class="text">
         <span class="q">Is this the real one?</span>
-        <h3>Catches fake coins with the same name</h3>
+        <h3>Warns about coins that share a name</h3>
         <p>When two coins in your wallets share a ticker, Bagscope warns you and compares them side by side by liquidity and risk.</p>
       </div>
       <figure class="shot"><img decoding="async" src="shots/samename.png" width="1320" height="860" alt="Dialog comparing three different tokens that all use the same ticker"></figure>
@@ -333,7 +355,7 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
         <h3>Your bags against just holding something else</h3>
         <p>Your holdings next to SOL, Bitcoin, Ethereum, a meme coin index, and the S&amp;P 500, Nasdaq 100 and gold through tokenised funds.</p>
         <ul>
-          <li>Entries fill themselves in from your transaction history</li>
+          <li>Entries fill themselves in from your swap history; tokens you received are valued at the market price of that day and marked as an estimate</li>
           <li>Average entry, realized and unrealized profit per coin</li>
         </ul>
       </div>
@@ -396,7 +418,7 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
     <details><summary>Can Bagscope move or spend my coins?</summary><p>No. It has no swap, send or signing feature for transactions. Connecting a wallet only shares its public address, the same information anyone can already see on a block explorer.</p></details>
     <details><summary>Why does it open my browser to connect?</summary><p>Phantom is a browser extension, so the approval has to happen where Phantom lives. Bagscope opens a small page on your own computer, Phantom asks you to approve, and only the public address comes back.</p></details>
     <details><summary>Where do the numbers come from?</summary><p>Balances and transactions from the Solana network. Prices from Jupiter, with DexScreener as a fallback. Risk data from RugCheck and Jupiter. Each figure in the app says where it came from and when it was last updated.</p></details>
-    <details><summary>How accurate is the performance history?</summary><p>Balances and current prices are exact. Charts for dates before you installed the app value today's holdings at past prices, and the app labels them as an estimate. Profit and loss per coin comes from your real swaps.</p></details>
+    <details><summary>How accurate is the performance history?</summary><p>Balances are read directly from the Solana network. Prices are market prices from Jupiter and can differ from what you would get when selling. Charts for dates before you installed the app value today's holdings at past prices, and the app labels them as an estimate. Profit and loss per coin comes from your own swaps.</p></details>
     <details><summary>Is there a Mac or Linux version?</summary><p>Not yet. Bagscope runs on Windows 10 and 11.</p></details>
     <details><summary>Is it really free?</summary><p>Yes. No ads, no subscription, no token. If it is useful to you, there is an optional tip address below.</p></details>
   </section>
@@ -415,15 +437,25 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
 </main>
 
 <footer class="gut">
+  <nav class="legal" aria-label="Legal">
+    <a href="legal/">Legal notice</a>
+    <a href="privacy/">Privacy policy</a>
+    <a href="terms/">Terms of use</a>
+    <a href="cookies/">Cookie policy</a>
+    <a href="donations/">Donations and refunds</a>
+    <a href="accessibility/">Accessibility</a>
+    <a href="assets/LICENSES.txt">Licences</a>
+  </nav>
   <span>Bagscope is free software released under the MIT licence, provided as is and without warranty. It includes open-source libraries and fonts under their own licences; the full notices ship with the app under Settings, About and legal.</span>
   <span>Data: balances and transactions from the Solana network; prices and charts from Jupiter; fallback data from DEX Screener and GeckoTerminal; risk data from RugCheck; the S&amp;P 500, Nasdaq 100 and gold benchmarks follow tokenised funds on Solana. Token names belong to their projects and are shown only to identify them.</span>
   <span>Bagscope is an independent project. It is not affiliated with or endorsed by Phantom, Solana, Jupiter, DEX Screener, GeckoTerminal, RugCheck, X or xAI.</span>
   <span>Nothing on this page or in the app is financial advice. Risk scores are tools for your own judgement, and a low score is not a guarantee. Crypto assets can lose all their value.</span>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<!-- Served from this site, so no other company sees who visits (licences: assets/LICENSES.txt) -->
+<script src="assets/js/gsap.min.js"></script>
+<script src="assets/js/ScrollTrigger.min.js"></script>
+<script src="assets/js/lenis.min.js"></script>
 <script>
 (function () {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -500,6 +532,8 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
     const target = document.querySelector(a.getAttribute('href'));
     if (!target) return;
     e.preventDefault();
+    document.querySelector('.menu')?.removeAttribute('open');
+    if (a.classList.contains('skip')) { target.setAttribute('tabindex', '-1'); target.focus(); }
     if (lenis) lenis.scrollTo(target, { offset: -70, duration: 1.4 });
     else target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
   }));
@@ -595,14 +629,21 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
       ctx.fillStyle = 'rgba(62,227,154,' + (0.25 * (1 - pulse)) + ')'; ctx.beginPath(); ctx.arc(lx, ly, 6 + pulse * 8, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = '#3ee39a'; ctx.beginPath(); ctx.arc(lx, ly, 3.5, 0, Math.PI * 2); ctx.fill();
     }
-    let visible = true;
+    let visible = true, paused = reduce;
     new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(canvas);
-    (function loop(t) { requestAnimationFrame(loop); if (visible) draw(t); })(0);
-    if (reduce) return;
+    (function loop(t) { requestAnimationFrame(loop); if (visible && !paused) draw(t); })(0);
+    if (reduce) { draw(0); document.getElementById('hcPause').hidden = true; return; }
+    // Anything that keeps moving must be possible to stop (WCAG 2.2.2).
+    const pauseBtn = document.getElementById('hcPause');
+    pauseBtn.addEventListener('click', () => {
+      paused = !paused;
+      pauseBtn.textContent = paused ? 'Play' : 'Pause';
+      pauseBtn.setAttribute('aria-pressed', String(paused));
+    });
     // a new candle every 1.4s; the total and one coin row move with it
     let shown = TOTAL, secs = 0;
     setInterval(() => {
-      if (!visible) return;
+      if (!visible || paused) return;
       push();
       const delta = (price - bars[bars.length - 2].c) * 9;
       const from = shown; shown = Math.max(TOTAL * 0.97, Math.min(TOTAL * 1.03, shown + delta));
