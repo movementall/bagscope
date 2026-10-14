@@ -301,7 +301,7 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
           <li>If data fails to load, it says so. It never fills a gap with a guess</li>
         </ul>
       </div>
-      <figure class="shot"><img loading="lazy" src="shots/dashboard.png" width="1320" height="860" alt="Bagscope dashboard: total balance across wallets, performance tiles, a portfolio chart and the allocation bar"></figure>
+      <figure class="shot"><img decoding="async" src="shots/dashboard.png" width="1320" height="860" alt="Bagscope dashboard: total balance across wallets, performance tiles, a portfolio chart and the allocation bar"></figure>
     </div>
 
     <div class="row flip" data-reveal>
@@ -315,7 +315,7 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
           <li>Whether the developer wallet is holding, reduced or sold</li>
         </ul>
       </div>
-      <figure class="shot"><img loading="lazy" src="shots/risk.png" width="1320" height="860" alt="Risk tab showing a Low risk score with each factor listed"></figure>
+      <figure class="shot"><img decoding="async" src="shots/risk.png" width="1320" height="860" alt="Risk tab showing a Low risk score with each factor listed"></figure>
     </div>
 
     <div class="row" data-reveal>
@@ -324,7 +324,7 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
         <h3>Catches fake coins with the same name</h3>
         <p>When two coins in your wallets share a ticker, Bagscope warns you and compares them side by side by liquidity and risk.</p>
       </div>
-      <figure class="shot"><img loading="lazy" src="shots/samename.png" width="1320" height="860" alt="Dialog comparing three different tokens that all use the same ticker"></figure>
+      <figure class="shot"><img decoding="async" src="shots/samename.png" width="1320" height="860" alt="Dialog comparing three different tokens that all use the same ticker"></figure>
     </div>
 
     <div class="row flip" data-reveal>
@@ -337,7 +337,7 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
           <li>Average entry, realized and unrealized profit per coin</li>
         </ul>
       </div>
-      <figure class="shot"><img loading="lazy" src="shots/benchmarks.png" width="1320" height="860" alt="Performance chart comparing your bags with SOL, Bitcoin, a meme index and the S&amp;P 500"></figure>
+      <figure class="shot"><img decoding="async" src="shots/benchmarks.png" width="1320" height="860" alt="Performance chart comparing your bags with SOL, Bitcoin, a meme index and the S&amp;P 500"></figure>
     </div>
 
     <div class="row" data-reveal>
@@ -351,7 +351,7 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
           <li>Liquidity being pulled from the main pool</li>
         </ul>
       </div>
-      <figure class="shot"><img loading="lazy" src="shots/alerts.png" width="1320" height="860" alt="Alerts page with a market cap alert being set using the shorthand 5m"></figure>
+      <figure class="shot"><img decoding="async" src="shots/alerts.png" width="1320" height="860" alt="Alerts page with a market cap alert being set using the shorthand 5m"></figure>
     </div>
     <p class="caption" data-reveal>The screenshots are the real app showing a real wallet with live on-chain data.</p>
   </section>
@@ -387,7 +387,7 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
       <p class="status" id="dlstatus2" role="status"></p>
       <p class="note">Windows may show “Windows protected your PC” because the installer is new and not yet signed. Choose “More info”, then “Run anyway”. On PCs with Smart App Control switched on, Windows may refuse unsigned apps altogether.</p>
     </div>
-    <figure class="shot" data-reveal><img loading="lazy" src="shots/welcome.png" width="1320" height="860" alt="First-run screen offering three ways to add a wallet"></figure>
+    <figure class="shot" data-reveal><img decoding="async" src="shots/welcome.png" width="1320" height="860" alt="First-run screen offering three ways to add a wallet"></figure>
   </section>
 
   <!-- Questions -->
@@ -521,7 +521,7 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
     });
     // screenshots rise and settle as they scroll in, always shown whole
     gsap.utils.toArray('.shot').forEach((f) => {
-      gsap.fromTo(f, { y: 70, opacity: 0, scale: 0.94 }, { y: 0, opacity: 1, scale: 1, ease: 'power2.out', scrollTrigger: { trigger: f, start: 'top 95%', end: 'top 55%', scrub: true } });
+      gsap.from(f, { y: 60, opacity: 0, scale: 0.95, duration: 0.9, ease: 'power3.out', scrollTrigger: { trigger: f, start: 'top 88%', once: true } });
     });
   }
 
