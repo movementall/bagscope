@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#070a10">
+<link rel="icon" href="../icon.png">
+<title>Add wallets · Bagscope</title>
+<link rel="stylesheet" href="../assets/fonts.css">
+<link rel="stylesheet" href="../assets/legal.css">
+<style>
+.list{display:flex;flex-direction:column;gap:6px;margin-block:18px}
+.w{display:flex;align-items:center;gap:12px;background:var(--panel);border-radius:10px;padding:12px 16px;min-width:0}
+.dot{width:10px;height:10px;border-radius:50%;flex:none}
+.w b{display:block}
+.addr{font:13px ui-monospace,Consolas,monospace;color:var(--soft);overflow-wrap:anywhere}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin-block:18px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 22px;border:0;border-radius:999px;font:600 16px var(--text);cursor:pointer;text-decoration:none}
+.btn.primary{background:var(--up);color:var(--up-ink)}
+.btn.ghost{background:var(--raised);color:var(--ink)}
+.status{color:var(--up);min-height:1.5em}
+.error{color:#ff5f6d}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header>
+  <a class="brand" href="../"><span class="mark" aria-hidden="true">B</span>Bagscope</a>
+</header>
+<main id="main">
+  <h1>Add these wallets to Bagscope</h1>
+  <p id="intro">Someone, probably you on another PC, shared a list of wallets with you.</p>
+  <div class="list" id="list" aria-live="polite"></div>
+  <div class="btns" id="actions" hidden>
+    <a class="btn primary" id="open" href="#">Open in Bagscope</a>
+    <button class="btn ghost" id="copy" type="button">Copy code</button>
+  </div>
+  <p class="status" id="status" role="status"></p>
+  <div class="box">
+    <p><b>Nothing leaves this page.</b> The wallet list is in the part of the link after "#", which your browser never sends to any website. This page only reads it and passes it to the Bagscope app on this PC. Only public addresses are included, never keys.</p>
+    <p>If "Open in Bagscope" does nothing, open Bagscope, go to Wallets, and paste the code under "Move your wallets to another PC".</p>
+    <p>No Bagscope on this PC yet? <a href="../">Download it free</a>, then open this link again.</p>
+  </div>
+</main>
+<footer>
+  <a href="../privacy/">Privacy policy</a>
+  <a href="../terms/">Terms of use</a>
+</footer>
+<script>
+(function () {
+  var list = document.getElementById('list');
+  var status = document.getElementById('status');
+  var code = location.hash.slice(1);
+  function fail(msg) { status.textContent = msg; status.className = 'status error'; }
+  if (!/^[A-Za-z0-9_-]{10,20000}$/.test(code)) return fail('This link holds no wallet list. Copy the whole link from Bagscope and try again.');
+  var data;
+  try {
+    var b64 = code.replace(/-/g, '+').replace(/_/g, '/');
+    var bin = atob(b64 + '==='.slice((b64.length + 3) % 4));
+    data = JSON.parse(decodeURIComponent(Array.prototype.map.call(bin, function (c) { return '%' + ('0' + c.charCodeAt(0).toString(16)).slice(-2); }).join('')));
+  } catch (e) { return fail('This wallet link is incomplete. Copy the whole link again.'); }
+  if (!data || data.v !== 1 || !Array.isArray(data.w)) return fail('This wallet link was made by a different version of Bagscope.');
+  var base58 = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+  var shown = 0;
+  data.w.slice(0, 50).forEach(function (w) {
+    if (!Array.isArray(w) || typeof w[0] !== 'string' || !base58.test(w[0])) return;
+    var row = document.createElement('div'); row.className = 'w';
+    var dot = document.createElement('span'); dot.className = 'dot';
+    dot.style.background = /^#[0-9a-f]{6}$/i.test(w[2]) ? w[2] : '#3ee39a';
+    var txt = document.createElement('div'); txt.style.minWidth = '0';
+    var name = document.createElement('b'); name.textContent = typeof w[1] === 'string' && w[1].trim() ? w[1].slice(0, 24) : 'Wallet';
+    var addr = document.createElement('span'); addr.className = 'addr'; addr.textContent = w[0];
+    txt.append(name, addr); row.append(dot, txt); list.append(row); shown++;
+  });
+  if (!shown) return fail('This link holds no valid wallet addresses.');
+  document.getElementById('intro').textContent = shown === 1 ? '1 wallet was shared with you.' : shown + ' wallets were shared with you.';
+  document.getElementById('actions').hidden = false;
+  document.getElementById('open').href = 'bagscope://add/' + code;
+  document.getElementById('copy').addEventListener('click', function () {
+    navigator.clipboard.writeText(code).then(function () { status.textContent = 'Code copied. Paste it in Bagscope under Wallets.'; }, function () { status.textContent = 'Copying was blocked. Use "Open in Bagscope" instead.'; });
+  });
+})();
+</script>
+</body>
+</html>
