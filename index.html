@@ -2,401 +2,749 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Bagscope is a free, open-source Windows app for Solana meme coin holders: every Phantom wallet in one real total, rug-risk checks, automatic entries and alerts. View-only.">
 <meta property="og:title" content="Bagscope">
-<meta property="og:description" content="Every Phantom wallet. One real number. Free, open source, view-only.">
-<meta property="og:image" content="shots/dashboard.png">
+<meta property="og:description" content="Every Phantom wallet. One real total. Free, open source, view-only.">
+<meta property="og:image" content="https://bagscope.org/shots/dashboard.png">
+<meta name="theme-color" content="#070a10">
 <link rel="icon" href="icon.png">
 <title>Bagscope</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  /* Layout: left-aligned product page. Hero with one framed screenshot, a trust band,
-     alternating text | screenshot feature rows, then install, questions and support.
-     Colours, type and radii are the app's own design system, so the site and the product match. */
-  :root {
-    --bg: #08090b;
-    --panel: #0f1114;
-    --raised: #15181c;
-    --line: rgba(255, 255, 255, 0.09);
-    --ink: #f2f4f7;
-    --dim: #8b93a1;
-    --faint: #5f6673;
-    --accent: #3dffa2;
-    --accent-ink: #04130b;
-    --accent-text: #3dffa2;
-    --accent-soft: rgba(61, 255, 162, 0.1);
-    --frame: #1d2126;
-    --display: 'Space Grotesk', 'Segoe UI Variable Display', 'Segoe UI', system-ui, sans-serif;
-    --body: 'Inter', 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif;
-    --mono: ui-monospace, 'Cascadia Mono', Consolas, monospace;
-    color-scheme: dark;
-  }
-  @media (prefers-color-scheme: light) {
-    :root:not([data-theme="dark"]) { --bg: #f4f5f7; --panel: #ffffff; --raised: #eceef1; --line: rgba(12, 14, 18, 0.11); --ink: #0c0e12; --dim: #586070; --faint: #8a919d; --accent-text: #087a49; --accent-soft: rgba(8, 122, 73, 0.09); --frame: #d5d9df; color-scheme: light }
-  }
-  :root[data-theme="light"] { --bg: #f4f5f7; --panel: #ffffff; --raised: #eceef1; --line: rgba(12, 14, 18, 0.11); --ink: #0c0e12; --dim: #586070; --faint: #8a919d; --accent-text: #087a49; --accent-soft: rgba(8, 122, 73, 0.09); --frame: #d5d9df; color-scheme: light }
+/* Layout: a plain hero, then a pinned chart that draws itself and carries the features,
+   then real screenshots and plain sections that build in as they scroll into view. */
+:root{
+  --bg:#070a10; --panel:#0e1420; --raised:#151d2c; --ink:#eef3f1; --soft:#8d99ab;
+  --up:#3ee39a; --up-ink:#04140c; --down:#ff5f6d; --gold:#ffc857;
+  --display:'Bricolage Grotesque','Arial Black','Segoe UI',sans-serif;
+  --text:'Geist','Segoe UI Variable Text','Segoe UI',system-ui,sans-serif;
+  --gut:clamp(16px,4vw,56px);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font-family:var(--text);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:clip}
+a{color:var(--ink)}
+p{margin:0}
+h1,h2,h3{font-family:var(--display);font-weight:800;letter-spacing:-0.035em;line-height:.95;margin:0;text-wrap:balance}
+:focus-visible{outline:2px solid var(--up);outline-offset:3px}
+.gut{padding-inline:var(--gut)}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
 
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  section[id], div[id], main[id] { scroll-margin-top: 20px; }
-  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
-  body { background: var(--bg); color: var(--ink); font: 16px/1.6 var(--body); padding-inline: 20px; padding-block: 0 48px; }
-  .wrap { max-width: 1120px; margin: 0 auto; }
-  a { color: var(--accent-text); }
-  h1, h2, h3 { font-family: var(--display); letter-spacing: -0.025em; text-wrap: balance; margin: 0; }
-  p { margin: 0; }
-  :focus-visible { outline: 2px solid var(--accent-text); outline-offset: 3px; border-radius: 6px; }
+/* top bar */
+.top{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;gap:24px;padding-block:calc(14px + env(safe-area-inset-top,0px)) 14px;background:rgba(7,10,16,.9)}
+.brand{display:flex;align-items:center;gap:10px;font:700 20px var(--display);letter-spacing:-0.03em;text-decoration:none;margin-right:auto}
+.mark{width:30px;height:30px;border-radius:8px;background:var(--up);color:var(--up-ink);display:grid;place-items:center;font:800 16px var(--display)}
+.top nav{display:flex;gap:22px;font-size:15px}
+.top nav a{text-decoration:none;color:var(--soft)}
+.top nav a:hover{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:0 24px;border:0;border-radius:999px;background:var(--up);color:var(--up-ink);font:600 16px var(--text);text-decoration:none;cursor:pointer;transition:transform .25s cubic-bezier(.2,.8,.2,1),background .2s ease}
+.btn:hover{transform:translateY(-2px) scale(1.03)}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:var(--raised);color:var(--ink)}
+.btn.small{min-height:40px;padding:0 18px;font-size:15px}
 
-  /* top bar */
-  .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 18px; flex-wrap: wrap; }
-  .brand { display: flex; align-items: center; gap: 10px; font: 600 19px var(--display); letter-spacing: -0.02em; color: var(--ink); text-decoration: none; }
-  .mark { width: 30px; height: 30px; border-radius: 9px; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font: 700 16px var(--display); }
-  .top nav { display: flex; gap: 22px; flex-wrap: wrap; font-size: 14.5px; }
-  .top nav a { color: var(--dim); text-decoration: none; }
-  .top nav a:hover { color: var(--ink); }
+/* scroll scenes */
+.scene{position:relative}
+.stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 
-  /* hero */
-  .hero { padding-block: 44px 28px; display: flex; flex-direction: column; gap: 22px; }
-  .hero h1 { font-size: clamp(38px, 6.4vw, 72px); line-height: 1.02; font-weight: 600; max-width: 14ch; }
-  .hero h1 em { font-style: normal; color: var(--accent-text); }
-  .lede { font-size: clamp(17px, 2vw, 20px); color: var(--dim); max-width: 60ch; }
-  .cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
-  .btn { display: inline-flex; align-items: center; gap: 9px; padding: 13px 20px; border-radius: 12px; font: 600 15.5px var(--body); text-decoration: none; border: 1px solid var(--line); color: var(--ink); background: var(--panel); cursor: pointer; transition: transform 0.12s ease, border-color 0.12s ease; }
-  .btn:hover { transform: translateY(-1px); border-color: var(--faint); }
-  .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
-  .meta { font-size: 13.5px; color: var(--faint); }
-  .shot { margin: 0; border-radius: 16px; overflow: hidden; border: 1px solid var(--frame); background: #08090b; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35); }
-  .shot img { display: block; width: 100%; height: auto; }
-  .hero .shot { margin-top: 14px; }
-  .caption { font-size: 12.5px; color: var(--faint); margin-top: 10px; }
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(24px,4vw,64px);align-items:center;padding-inline:0 var(--gut);padding-block:calc(130px + env(safe-area-inset-top,0px)) 60px}
+.hero-copy{display:flex;flex-direction:column;gap:22px;min-width:0}
+.hero-card{background:var(--panel);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:10px;box-shadow:0 30px 80px rgba(0,0,0,.45);min-width:0;font-variant-numeric:tabular-nums}
+.hc-top{display:flex;justify-content:space-between;font-size:14px;color:var(--soft)}
+.hc-ex{background:var(--raised);padding:2px 10px;border-radius:999px;font-size:12px}
+.hc-total{font:800 clamp(36px,4vw,56px)/1 var(--display);letter-spacing:-0.04em}
+.hc-change{font-size:15px;color:var(--up)}
+#mini{width:100%;height:150px;display:block;margin-block:6px}
+.hc-rows{display:flex;flex-direction:column;gap:4px}
+.hc-row{display:grid;grid-template-columns:minmax(0,1fr) auto 64px 58px;gap:12px;align-items:center;padding:9px 10px;border-radius:6px;font-size:15px}
+.hc-row:nth-child(odd){background:var(--raised)}
+.hc-row b{font-weight:600}
+.hc-row .v,.hc-row .c{text-align:right}
+.hc-row .c.up{color:var(--up)} .hc-row .c.dn{color:var(--down)}
+.hc-row .r{justify-self:end;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px}
+.r.low{background:#10291d;color:var(--up)} .r.mid{background:#33290f;color:var(--gold)} .r.high{background:#36141a;color:var(--down)}
+.hc-row.flash .v{animation:flash .9s ease}
+@keyframes flash{30%{color:var(--up)}}
+.hc-foot{font-size:13px;color:var(--soft)}
+.hero-copy h1{font-size:clamp(42px,min(9.2vw,13vh),148px);max-width:11ch}
+.hero-copy h1 .ln{display:block;overflow:hidden;padding-bottom:.07em}
+.hero-copy h1 .w{display:inline-block}
+.hero-copy .lede{max-width:44ch;font-size:clamp(17px,1.5vw,20px)}
+.cta{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.meta{font-size:14px;color:var(--soft)}
+.status{font-size:14px;color:var(--up);min-height:1.4em}
+.fade{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
+.fade.on{opacity:1;transform:none}
 
-  /* trust band */
-  .trust { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; margin-block: 36px; }
-  .trust div { background: var(--panel); padding: 20px; }
-  .trust b { display: block; font: 600 16px var(--display); margin-bottom: 4px; }
-  .trust span { font-size: 14px; color: var(--dim); }
+/* safety */
+.safety{padding-block:140px 120px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(20px,3vw,40px)}
+.safety h2{grid-column:1/-1;font-size:clamp(40px,6vw,88px);max-width:14ch;margin-bottom:24px}
+.safety div{display:flex;flex-direction:column;gap:8px}
+.safety b{font:700 clamp(22px,2vw,28px) var(--display);letter-spacing:-0.025em}
+.safety span{color:var(--soft)}
 
-  /* feature rows */
-  .section-head { padding-block: 44px 8px; max-width: 62ch; }
-  .section-head h2 { font-size: clamp(28px, 3.6vw, 40px); font-weight: 600; }
-  .section-head p { color: var(--dim); margin-top: 10px; }
-  .row { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 40px; align-items: center; padding-block: 34px; border-top: 1px solid var(--line); }
-  .row.flip .text { order: 2; }
-  .text { min-width: 0; }
-  .kicker { font: 600 12px var(--body); letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent-text); margin-bottom: 10px; }
-  .text h3 { font-size: clamp(23px, 2.6vw, 30px); font-weight: 600; margin-bottom: 12px; }
-  .text p { color: var(--dim); }
-  .text ul { margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
-  .text li { padding-left: 22px; position: relative; font-size: 15px; }
-  .text li::before { content: ''; position: absolute; left: 2px; top: 0.62em; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-text); }
+/* chart story */
+#story{height:520vh}
+#story .stage{display:grid;grid-template-columns:minmax(300px,4fr) minmax(0,8fr);padding-top:calc(72px + env(safe-area-inset-top,0px))}
+.story-side{padding:clamp(24px,5vh,56px) 0 32px var(--gut);display:flex;flex-direction:column;gap:clamp(20px,4vh,36px);min-width:0}
+.story-side h2{font-size:clamp(32px,min(3.8vw,7vh),60px)}
+.rail{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.rail li{position:relative;padding:12px 0 12px 30px;color:var(--soft);transition:color .35s ease}
+.rail li::before{content:"";position:absolute;left:0;top:19px;width:12px;height:12px;border-radius:50%;background:var(--raised);transition:background .35s ease,transform .35s ease}
+.rail li::after{content:"";position:absolute;left:5px;top:36px;bottom:-10px;width:2px;background:var(--raised)}
+.rail li:last-child::after{display:none}
+.rail li b{display:block;font:700 clamp(18px,1.6vw,22px) var(--display);letter-spacing:-0.02em}
+.rail li span{display:block;max-height:0;opacity:0;overflow:hidden;font-size:16px;transition:max-height .5s ease,opacity .4s ease,margin .4s ease}
+.rail li.done::before{background:var(--up)}
+.rail li.on{color:var(--ink)}
+.rail li.on::before{background:var(--up);transform:scale(1.35);box-shadow:0 0 0 6px rgba(62,227,154,.18)}
+.rail li.on span{max-height:120px;opacity:1;margin-top:6px;color:var(--soft)}
+.story-foot{font-size:14px;color:var(--soft);margin-top:auto}
+.story-chart{position:relative;min-width:0}
+.story-chart canvas{position:absolute;inset:0;width:100%;height:100%}
+.toast{position:absolute;right:24px;bottom:28px;width:min(340px,calc(100% - 48px));background:#1a2232;border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:4px;box-shadow:0 18px 50px rgba(0,0,0,.5);transform:translateX(calc(100% + 40px));opacity:0;transition:transform .6s cubic-bezier(.2,.9,.2,1),opacity .4s ease}
+.toast.on{transform:none;opacity:1}
+.toast-app{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--soft)}
+.toast-app .mark{width:20px;height:20px;border-radius:5px;font-size:12px}
+.toast b{font:600 16px var(--text)}
+.toast span{font-size:14px;color:var(--soft)}
 
-  /* also inside */
-  .more { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 28px; padding-block: 8px 12px; }
-  .more div { padding-block: 14px; border-top: 1px solid var(--line); min-width: 0; }
-  .more b { display: block; font: 600 15.5px var(--display); }
-  .more span { font-size: 14px; color: var(--dim); }
+/* features with screenshots */
+.feat{padding-block:120px 40px;display:flex;flex-direction:column;gap:140px}
+.feat-head h2{font-size:clamp(40px,6vw,88px);max-width:15ch}
+.feat-head p{margin-top:20px;max-width:56ch;font-size:clamp(17px,1.5vw,20px);color:var(--soft)}
+.row{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,5vw,72px);align-items:center}
+.row.flip .text{order:2}
+.text{min-width:0;display:flex;flex-direction:column;gap:14px}
+.text .q{font:600 18px var(--display);color:var(--up);letter-spacing:-0.01em}
+.text h3{font-size:clamp(30px,3.4vw,48px)}
+.text p{color:var(--soft)}
+.text ul{margin:6px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.text li{padding-left:24px;position:relative}
+.text li::before{content:"";position:absolute;left:2px;top:.6em;width:10px;height:10px;border-radius:2px;background:var(--up)}
+.shot{margin:0;overflow:hidden;border-radius:10px;background:var(--panel)}
+.shot img{display:block;width:100%;height:auto}
+.caption{font-size:14px;color:var(--soft)}
 
-  /* steps and install */
-  .two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: start; padding-block: 12px 8px; }
-  ol.steps { margin: 0; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 16px; }
-  ol.steps li { counter-increment: s; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 14px; }
-  ol.steps li::before { content: counter(s); width: 34px; height: 34px; border-radius: 10px; background: var(--accent-soft); color: var(--accent-text); display: grid; place-items: center; font: 600 15px var(--display); }
-  ol.steps b { display: block; }
-  ol.steps span { color: var(--dim); font-size: 15px; }
-  .note { margin-top: 18px; padding: 14px 16px; border-radius: 12px; background: var(--raised); font-size: 14px; color: var(--dim); }
+/* also inside */
+.more{padding-block:120px 40px}
+.more h2{font-size:clamp(40px,6vw,88px);margin-bottom:48px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:36px clamp(20px,3vw,48px)}
+.grid div{display:flex;flex-direction:column;gap:6px;min-width:0}
+.grid b{font:700 21px var(--display);letter-spacing:-0.02em}
+.grid span{color:var(--soft);font-size:16px}
 
-  /* questions */
-  details { border-top: 1px solid var(--line); padding-block: 16px; }
-  details:last-of-type { border-bottom: 1px solid var(--line); }
-  summary { cursor: pointer; font: 600 17px var(--display); list-style: none; display: flex; justify-content: space-between; gap: 16px; }
-  summary::-webkit-details-marker { display: none; }
-  summary::after { content: '+'; color: var(--accent-text); font-weight: 500; }
-  details[open] summary::after { content: '–'; }
-  details p { color: var(--dim); margin-top: 10px; max-width: 70ch; }
+/* install */
+.install{padding-block:140px 40px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:clamp(28px,5vw,72px);align-items:start}
+.install h2{font-size:clamp(40px,6vw,88px);margin-bottom:28px}
+ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:22px}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:44px minmax(0,1fr);gap:16px}
+ol.steps li::before{content:counter(s);width:44px;height:44px;border-radius:50%;background:var(--up);color:var(--up-ink);display:grid;place-items:center;font:800 19px var(--display)}
+ol.steps b{display:block;font:700 20px var(--display);letter-spacing:-0.02em}
+ol.steps span{color:var(--soft)}
+.note{margin-top:28px;padding:18px 20px;background:var(--panel);font-size:15px;color:var(--soft)}
 
-  /* support */
-  .support { margin-top: 44px; padding: 28px; border-radius: 18px; background: var(--panel); border: 1px solid var(--line); display: grid; gap: 14px; }
-  .support h2 { font-size: 26px; font-weight: 600; }
-  .addr { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-  .addr code { font: 13.5px var(--mono); background: var(--raised); padding: 11px 14px; border-radius: 10px; overflow-wrap: anywhere; min-width: 0; flex: 1 1 320px; user-select: all; }
-  .status { font-size: 13.5px; color: var(--accent-text); min-height: 1.5em; }
+/* questions */
+.faq{padding-block:140px 40px;max-width:900px}
+.faq h2{font-size:clamp(40px,6vw,88px);margin-bottom:28px}
+details{padding-block:18px;background:transparent}
+details+details{border-top:2px solid var(--panel)}
+summary{cursor:pointer;font:700 clamp(19px,1.8vw,23px) var(--display);letter-spacing:-0.02em;list-style:none;display:flex;justify-content:space-between;gap:16px;align-items:center;min-height:44px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--up);font-size:28px;font-weight:500;transition:transform .3s ease}
+details[open] summary::after{transform:rotate(45deg)}
+details p{color:var(--soft);margin-top:10px;max-width:68ch}
 
-  footer { margin-top: 44px; padding-top: 22px; border-top: 1px solid var(--line); font-size: 13px; color: var(--faint); display: grid; gap: 8px; max-width: 86ch; }
+/* support */
+.support{margin-block:140px 0;padding-block:64px;background:var(--panel);display:flex;flex-direction:column;gap:18px}
+.support h2{font-size:clamp(36px,4.6vw,64px)}
+.support p{color:var(--soft);max-width:62ch}
+.addr{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.addr code{font:15px var(--text);background:var(--raised);padding:14px 16px;overflow-wrap:anywhere;min-width:0;flex:1 1 320px;user-select:all}
 
-  @media (max-width: 860px) {
-    .row, .two { grid-template-columns: minmax(0, 1fr); gap: 22px; }
-    .row.flip .text { order: 0; }
-    .trust { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .more { grid-template-columns: minmax(0, 1fr); }
-  }
-  @media (max-width: 460px) { .trust { grid-template-columns: minmax(0, 1fr); } }
-  @media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
+/* closing + footer */
+.close{padding-block:160px 120px;display:flex;flex-direction:column;gap:28px;align-items:flex-start}
+.close h2{font-size:clamp(56px,13vw,220px);letter-spacing:-0.05em;line-height:.85}
+footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size:13.5px;color:var(--soft);display:flex;flex-direction:column;gap:10px;max-width:100ch}
+
+.nogl{position:absolute;inset:0;background:var(--bg)}
+
+/* phone */
+.only-phone{display:none}
+@media (max-width:900px){
+  .top nav{display:none}
+  .safety{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .row,.install{grid-template-columns:minmax(0,1fr)}
+  .row.flip .text{order:0}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #story{height:440vh}
+  .hero{grid-template-columns:minmax(0,1fr);padding-inline:var(--gut);padding-top:calc(100px + env(safe-area-inset-top,0px))}
+  .hero-copy.gut{padding-inline:0}
+  .hc-row{grid-template-columns:minmax(0,1fr) auto 58px 52px;gap:8px;font-size:14px;padding:8px}
+  #story .stage{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
+  .story-side{padding:20px var(--gut) 0;gap:12px}
+  .story-side h2{font-size:clamp(28px,7vw,40px)}
+  .rail li{display:none;padding-block:4px}
+  .rail li.on{display:block}
+  .rail li::after{display:none}
+  .story-foot{display:none}
+  .toast{right:12px;bottom:16px;width:calc(100% - 24px)}
+}
+@media (max-width:560px){
+  .safety,.grid{grid-template-columns:minmax(0,1fr)}
+  .feat{gap:96px}
+  .only-phone{display:block}
+}
+@media (prefers-reduced-motion:reduce){
+  .fade,.btn,summary::after,.rail li,.rail li::before,.rail li span,.toast{transition:none}
+}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header class="top">
-    <a class="brand" href="#top"><span class="mark">B</span>Bagscope</a>
-    <nav aria-label="Sections">
-      <a href="#features">Features</a>
-      <a href="#safety">Safety</a>
-      <a href="#install">Install</a>
-      <a href="#questions">Questions</a>
-      <a href="https://github.com/movementall/bagscope" target="_blank" rel="noopener">Source code</a>
-    </nav>
-  </header>
 
-  <main id="top">
-    <section class="hero">
-      <h1>Every Phantom wallet. <em>One real number.</em></h1>
-      <p class="lede">Bagscope is a free Windows app for Solana meme coin holders. It adds up all your wallets from on-chain balances, works out what you actually paid, and shows the warning signs before a coin rugs. It is view-only and can never move your funds.</p>
-      <div class="cta">
-        <a class="btn primary" id="download" href="#top">Download for Windows</a>
-        <a class="btn" href="https://github.com/movementall/bagscope" target="_blank" rel="noopener">Read the source code</a>
+<header class="top gut" id="topbar">
+  <a class="brand" href="#hero"><span class="mark">B</span>Bagscope</a>
+  <nav aria-label="Sections">
+    <a href="#features">Features</a>
+    <a href="#safety">Safety</a>
+    <a href="#install">Install</a>
+    <a href="#questions">Questions</a>
+    <a href="https://github.com/movementall/bagscope" target="_blank" rel="noopener">Source code</a>
+  </nav>
+  <a class="btn small dl" href="#install">Download</a>
+</header>
+
+<main>
+  <!-- Hero -->
+  <section id="hero" class="hero">
+      <div class="hero-copy gut">
+        <h1 id="title"><span class="ln">Every wallet.</span><span class="ln">One real total.</span></h1>
+        <p class="lede">A free Windows app for Solana meme coin holders. It adds up every Phantom wallet from on-chain balances, fills in what you paid, and shows the warning signs before a coin rugs. View-only: it can never move your funds.</p>
+        <div class="cta">
+          <a class="btn dl" id="download" href="#install">Download for Windows</a>
+          <a class="btn ghost" href="https://github.com/movementall/bagscope" target="_blank" rel="noopener">Read the source code</a>
+        </div>
+        <p class="status" id="dlstatus" role="status"></p>
+        <p class="meta">Windows 10 and 11 · 107 MB · free and open source · no account</p>
       </div>
-      <p class="status" id="dlstatus" role="status"></p>
-      <p class="meta">Windows 10 and 11, 64-bit · 107 MB · free and open source · no account, no sign-up</p>
-      <figure class="shot">
-        <img src="shots/dashboard.png" width="1320" height="860" alt="Bagscope dashboard: total balance across wallets, 24h to 1-year performance tiles, a portfolio chart and the allocation bar">
-      </figure>
-      <p class="caption">Screenshots on this page are the real app showing a real wallet with live on-chain data. Nothing in them is mocked up.</p>
-    </section>
+      <div class="hero-card" id="heroCard" aria-label="Example of the Bagscope dashboard">
+        <div class="hc-top"><span>Total · 3 wallets</span><span class="hc-ex">Example</span></div>
+        <div class="hc-total" id="hcTotal">$53,593.65</div>
+        <div class="hc-change" id="hcChange">+$1,284.20 (+2.46%) today</div>
+        <canvas id="mini" height="150"></canvas>
+        <div class="hc-rows">
+          <div class="hc-row"><b>SOL</b><span class="v">$30,679.68</span><span class="c up">+2.1%</span><span class="r low">Low</span></div>
+          <div class="hc-row"><b>WIF</b><span class="v">$8,412.30</span><span class="c dn">−4.8%</span><span class="r low">Low</span></div>
+          <div class="hc-row"><b>BONK</b><span class="v">$5,960.11</span><span class="c up">+0.6%</span><span class="r low">Low</span></div>
+          <div class="hc-row"><b>POPCAT</b><span class="v">$3,904.75</span><span class="c up">+11.3%</span><span class="r mid">Watch</span></div>
+          <div class="hc-row"><b>PNUT</b><span class="v">$1,754.41</span><span class="c dn">−7.2%</span><span class="r high">High</span></div>
+        </div>
+        <div class="hc-foot" id="hcFoot">Updated just now</div>
+      </div>
+  </section>
 
-    <section class="trust" id="safety" aria-label="Safety at a glance">
-      <div><b>View-only</b><span>Reads public addresses. Has no feature that sends a transaction.</span></div>
-      <div><b>No seed phrase, ever</b><span>There is nowhere to type one. If something asks, it is not Bagscope.</span></div>
-      <div><b>Stays on your PC</b><span>Wallets, settings and history are stored locally. No account, no tracking.</span></div>
-      <div><b>Open source</b><span>Every line is readable, so you do not have to take anyone's word for it.</span></div>
-    </section>
+  <!-- Safety -->
+  <section class="safety gut" id="safety" data-reveal>
+    <h2>Looks at your bags. Never touches them.</h2>
+    <div><b>View-only</b><span>Reads public addresses. There is no feature that sends a transaction.</span></div>
+    <div><b>No seed phrase, ever</b><span>There is nowhere to type one. If something asks, it is not Bagscope.</span></div>
+    <div><b>Stays on your PC</b><span>Wallets, settings and history are stored locally. No account, no tracking.</span></div>
+    <div><b>Open source</b><span>Every line is public, so you do not have to take anyone's word for it.</span></div>
+  </section>
 
-    <div class="section-head" id="features">
-      <h2>Built for people who hold more coins than they can keep in their head</h2>
-      <p>Phantom shows one account at a time and happily values an illiquid airdrop at a fantasy price. Bagscope answers the four questions that matter.</p>
+  <!-- Chart story -->
+  <section class="scene" id="story">
+    <div class="stage">
+      <div class="story-side">
+        <h2>One coin, the way Bagscope sees it.</h2>
+        <ol class="rail" id="rail">
+          <li class="on"><b>Your entry, filled in</b><span>Bagscope reads your own swap history and marks where you bought. You type nothing.</span></li>
+          <li><b>An alert the moment it moves</b><span>Set "market cap above 5m" once. A Windows notification fires as it crosses.</span></li>
+          <li><b>Profit per coin</b><span>Average entry, realized and unrealized profit, all in one total.</span></li>
+          <li><b>A rug check before it is too late</b><span>Six checks per coin. Here the developer wallet sold 40% of its supply.</span></li>
+        </ol>
+        <p class="story-foot">Example coin. In the app every candle comes from Jupiter.</p>
+      </div>
+      <div class="story-chart">
+        <canvas id="chart" aria-label="A candlestick chart drawing itself as you scroll, with Bagscope's features marked on it"></canvas>
+        <div class="toast" id="toast" role="status" aria-live="polite">
+          <div class="toast-app"><span class="mark">B</span>Bagscope · now</div>
+          <b>POPCAT passed $5M market cap</b>
+          <span>Your alert "market cap above 5m" just fired.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features with real screenshots -->
+  <section class="feat gut" id="features">
+    <div class="feat-head" data-reveal>
+      <h2>For people with more coins than they can keep in their head</h2>
+      <p>Phantom shows one account at a time and happily values an illiquid airdrop at a fantasy price. Bagscope answers the questions that matter.</p>
     </div>
 
-    <section class="row">
+    <div class="row" data-reveal>
       <div class="text">
-        <div class="kicker">What am I worth?</div>
+        <span class="q">What am I worth?</span>
         <h3>A total you can trust</h3>
-        <p>Balances are read straight from the Solana network for every wallet you add, then priced from the pool with the deepest liquidity.</p>
+        <p>Balances come straight from the Solana network for every wallet you add, priced from the pool with the deepest liquidity.</p>
         <ul>
-          <li>Coins with no real price, or more value than could ever be sold, are left out and each one says why</li>
+          <li>Coins with no real price, or more value than could ever be sold, are left out, and each says why</li>
           <li>24h, 7d, 30d, 6-month and 1-year performance</li>
-          <li>All wallets together, or one at a time, with your own labels</li>
           <li>If data fails to load, it says so. It never fills a gap with a guess</li>
         </ul>
       </div>
-      <figure class="shot"><img loading="lazy" src="shots/token.png" width="1320" height="860" alt="Token detail panel with price chart, your position, market cap, liquidity, holders and developer wallet status"></figure>
-    </section>
+      <figure class="shot"><img loading="lazy" src="shots/dashboard.png" width="1320" height="860" alt="Bagscope dashboard: total balance across wallets, performance tiles, a portfolio chart and the allocation bar"></figure>
+    </div>
 
-    <section class="row flip">
+    <div class="row flip" data-reveal>
       <div class="text">
-        <div class="kicker">Is this about to rug?</div>
+        <span class="q">Is this about to rug?</span>
         <h3>A risk score that shows its working</h3>
-        <p>Low, Medium or High, built from six checks you can read one by one instead of a mystery number.</p>
+        <p>Low, Medium or High, built from six checks you can read one by one.</p>
         <ul>
           <li>Liquidity, top-10 holder share, token age</li>
           <li>Mint and freeze authority, LP locked or burned</li>
           <li>Whether the developer wallet is holding, reduced or sold</li>
-          <li>Flags from RugCheck listed underneath</li>
         </ul>
       </div>
-      <figure class="shot"><img loading="lazy" src="shots/risk.png" width="1320" height="860" alt="Risk tab showing a Low risk score with each factor: liquidity, top 10 holders, token age, authorities and LP lock"></figure>
-    </section>
+      <figure class="shot"><img loading="lazy" src="shots/risk.png" width="1320" height="860" alt="Risk tab showing a Low risk score with each factor listed"></figure>
+    </div>
 
-    <section class="row">
+    <div class="row" data-reveal>
       <div class="text">
-        <div class="kicker">Is this the real one?</div>
+        <span class="q">Is this the real one?</span>
         <h3>Catches fake coins with the same name</h3>
-        <p>Anyone can launch a token with any ticker. When two coins in your wallets share a name, Bagscope puts a warning on the row and lets you compare them side by side by liquidity and risk.</p>
-        <ul>
-          <li>Also searches for other coins using that ticker</li>
-          <li>Verified coins are marked</li>
-        </ul>
+        <p>When two coins in your wallets share a ticker, Bagscope warns you and compares them side by side by liquidity and risk.</p>
       </div>
-      <figure class="shot"><img loading="lazy" src="shots/samename.png" width="1320" height="860" alt="Dialog comparing three different tokens that all use the ticker TRENCHER, by liquidity and risk level"></figure>
-    </section>
+      <figure class="shot"><img loading="lazy" src="shots/samename.png" width="1320" height="860" alt="Dialog comparing three different tokens that all use the same ticker"></figure>
+    </div>
 
-    <section class="row flip">
+    <div class="row flip" data-reveal>
       <div class="text">
-        <div class="kicker">Am I actually doing well?</div>
+        <span class="q">Am I actually doing well?</span>
         <h3>Your bags against just holding something else</h3>
-        <p>One chart, everything starting from zero: your holdings next to SOL, Bitcoin, Ethereum, a meme coin index, and the S&amp;P 500, Nasdaq 100 and gold through tokenised funds.</p>
+        <p>Your holdings next to SOL, Bitcoin, Ethereum, a meme coin index, and the S&amp;P 500, Nasdaq 100 and gold through tokenised funds.</p>
         <ul>
-          <li>Entries fill themselves in: Bagscope reads your transaction history and records every swap at the price you paid</li>
+          <li>Entries fill themselves in from your transaction history</li>
           <li>Average entry, realized and unrealized profit per coin</li>
-          <li>Daily snapshots and CSV export</li>
         </ul>
       </div>
-      <figure class="shot"><img loading="lazy" src="shots/benchmarks.png" width="1320" height="860" alt="Performance versus benchmarks chart comparing your bags with SOL, Bitcoin, a meme index and the S&P 500 over 30 days"></figure>
-    </section>
+      <figure class="shot"><img loading="lazy" src="shots/benchmarks.png" width="1320" height="860" alt="Performance chart comparing your bags with SOL, Bitcoin, a meme index and the S&amp;P 500"></figure>
+    </div>
 
-    <section class="row">
+    <div class="row" data-reveal>
       <div class="text">
-        <div class="kicker">Tell me when it moves</div>
+        <span class="q">Tell me when it moves</span>
         <h3>Alerts as Windows notifications</h3>
-        <p>Set a level once and get on with your day. Type amounts the way you say them: 5m, 250k, 1.2b.</p>
+        <p>Type amounts the way you say them: 5m, 250k, 1.2b.</p>
         <ul>
-          <li>Price above or below</li>
-          <li>Market cap above or below</li>
+          <li>Price or market cap above or below</li>
           <li>Whale trades over a size you choose</li>
           <li>Liquidity being pulled from the main pool</li>
         </ul>
       </div>
       <figure class="shot"><img loading="lazy" src="shots/alerts.png" width="1320" height="860" alt="Alerts page with a market cap alert being set using the shorthand 5m"></figure>
-    </section>
-
-    <div class="section-head">
-      <h2>Also inside</h2>
     </div>
-    <section class="more">
+    <p class="caption" data-reveal>The screenshots are the real app showing a real wallet with live on-chain data.</p>
+  </section>
+
+  <!-- Also inside -->
+  <section class="more gut" data-reveal>
+    <h2>Also inside</h2>
+    <div class="grid">
       <div><b>Connect from your phone</b><span>Scan a QR code and approve in the Phantom mobile app.</span></div>
       <div><b>Watch any address</b><span>Track a cold wallet without connecting anything.</span></div>
       <div><b>Degen mode</b><span>Hide dust and rank coins by how hard they moved today.</span></div>
       <div><b>Search everything</b><span>Ctrl+K finds any coin by name, ticker or mint address.</span></div>
       <div><b>Mini view and tray</b><span>A small always-on-top total, and alerts that keep running in the tray.</span></div>
-      <div><b>PnL cards</b><span>A shareable image of your result, with dollar amounts optional.</span></div>
+      <div><b>PnL cards</b><span>A shareable image of your result, dollar amounts optional.</span></div>
       <div><b>Grok analysis</b><span>A read on narrative and sentiment per coin, with your own xAI key.</span></div>
-      <div><b>Posts from X</b><span>Recent posts per coin, trending counts and influencer alerts, with your own X API access.</span></div>
-      <div><b>Dark, light and your accent colour</b><span>Six presets or any colour you like.</span></div>
-    </section>
+      <div><b>Posts from X</b><span>Recent posts per coin and influencer alerts, with your own X API access.</span></div>
+      <div><b>Your colours</b><span>Dark, light and any accent colour you like.</span></div>
+    </div>
+  </section>
 
-    <div class="section-head" id="install">
+  <!-- Install -->
+  <section class="install gut" id="install">
+    <div data-reveal>
       <h2>Install it in a minute</h2>
-      <p>The same three steps whether your wallet lives in a browser extension or on your phone.</p>
-    </div>
-    <section class="two">
-      <div>
-        <ol class="steps">
-          <li><div><b>Download and run the installer</b><span>Choose the folder and whether you want a desktop shortcut.</span></div></li>
-          <li><div><b>Add a wallet</b><span>Connect Phantom on this PC, scan a QR code with your phone, or paste an address to watch.</span></div></li>
-          <li><div><b>Approve and sign a short message</b><span>That proves the address is yours. It is not a transaction and costs nothing. Bagscope keeps only the public address.</span></div></li>
-        </ol>
-        <p class="note">Windows may show “Windows protected your PC” because the installer is new and not yet signed by a certificate. Choose “More info”, then “Run anyway”. On PCs with Smart App Control switched on, Windows may refuse unsigned apps altogether.</p>
+      <ol class="steps">
+        <li><div><b>Download and run the installer</b><span>Choose the folder and whether you want a desktop shortcut.</span></div></li>
+        <li><div><b>Add a wallet</b><span>Connect Phantom on this PC, scan a QR code with your phone, or paste an address to watch.</span></div></li>
+        <li><div><b>Approve and sign a short message</b><span>That proves the address is yours. It is not a transaction and costs nothing.</span></div></li>
+      </ol>
+      <div class="cta" style="margin-top:32px">
+        <a class="btn dl" href="#install">Download for Windows</a>
       </div>
-      <figure class="shot"><img loading="lazy" src="shots/welcome.png" width="1320" height="860" alt="First-run screen offering three ways to add a wallet: Phantom on this PC, Phantom on your phone, or watching an address"></figure>
-    </section>
-
-    <div class="section-head" id="questions">
-      <h2>Questions people ask first</h2>
+      <p class="status" id="dlstatus2" role="status"></p>
+      <p class="note">Windows may show “Windows protected your PC” because the installer is new and not yet signed. Choose “More info”, then “Run anyway”. On PCs with Smart App Control switched on, Windows may refuse unsigned apps altogether.</p>
     </div>
-    <section>
-      <details>
-        <summary>Can Bagscope move or spend my coins?</summary>
-        <p>No. It has no swap, send or signing feature for transactions. Connecting a wallet only shares its public address, the same information anyone can already see on a block explorer.</p>
-      </details>
-      <details>
-        <summary>Why does it open my browser to connect?</summary>
-        <p>Phantom is a browser extension, so the approval has to happen where Phantom lives. Bagscope opens a small page on your own computer, Phantom asks you to approve, and only the public address comes back.</p>
-      </details>
-      <details>
-        <summary>Where do the numbers come from?</summary>
-        <p>Balances and transactions from the Solana network. Prices from Jupiter, with DexScreener as a fallback. Risk data from RugCheck and Jupiter. The stock index and gold benchmarks follow tokenised funds on Solana. Each figure in the app says where it came from and when it was last updated.</p>
-      </details>
-      <details>
-        <summary>How accurate is the performance history?</summary>
-        <p>Balances and current prices are exact. Charts for dates before you installed the app value today's holdings at past prices, and the app labels them as an estimate. Profit and loss per coin comes from your real swaps.</p>
-      </details>
-      <details>
-        <summary>Is there a Mac or Linux version?</summary>
-        <p>Not yet. Bagscope currently runs on Windows 10 and 11.</p>
-      </details>
-      <details>
-        <summary>Is it really free?</summary>
-        <p>Yes. No ads, no subscription, no token. If it is useful to you, there is an optional tip address below.</p>
-      </details>
-    </section>
+    <figure class="shot" data-reveal><img loading="lazy" src="shots/welcome.png" width="1320" height="860" alt="First-run screen offering three ways to add a wallet"></figure>
+  </section>
 
-    <section class="support" id="support">
-      <h2>Support the dev</h2>
-      <p style="color: var(--dim); max-width: 64ch;">Bagscope is free. If it saves you time or a rug, a tip in SOL keeps it going. Send from your own wallet on the Solana network; the app has the same address with a QR code under “Support the dev”.</p>
-      <div class="addr">
-        <code id="addr">3iVACqzJpf2cKU3UD6fA4ca2diSATs8J9qvozV9QD7f5</code>
-        <button class="btn" id="copy" type="button">Copy address</button>
-      </div>
-      <div class="status" id="status" role="status"></div>
-    </section>
-  </main>
+  <!-- Questions -->
+  <section class="faq gut" id="questions" data-reveal>
+    <h2>Questions people ask first</h2>
+    <details><summary>Can Bagscope move or spend my coins?</summary><p>No. It has no swap, send or signing feature for transactions. Connecting a wallet only shares its public address, the same information anyone can already see on a block explorer.</p></details>
+    <details><summary>Why does it open my browser to connect?</summary><p>Phantom is a browser extension, so the approval has to happen where Phantom lives. Bagscope opens a small page on your own computer, Phantom asks you to approve, and only the public address comes back.</p></details>
+    <details><summary>Where do the numbers come from?</summary><p>Balances and transactions from the Solana network. Prices from Jupiter, with DexScreener as a fallback. Risk data from RugCheck and Jupiter. Each figure in the app says where it came from and when it was last updated.</p></details>
+    <details><summary>How accurate is the performance history?</summary><p>Balances and current prices are exact. Charts for dates before you installed the app value today's holdings at past prices, and the app labels them as an estimate. Profit and loss per coin comes from your real swaps.</p></details>
+    <details><summary>Is there a Mac or Linux version?</summary><p>Not yet. Bagscope runs on Windows 10 and 11.</p></details>
+    <details><summary>Is it really free?</summary><p>Yes. No ads, no subscription, no token. If it is useful to you, there is an optional tip address below.</p></details>
+  </section>
 
-  <footer>
-    <span>Bagscope is free software released under the MIT licence, provided as is and without warranty. It includes open-source libraries and fonts under their own licences; the full notices ship with the app under Settings, About and legal.</span>
-    <span>Data: balances and transactions from the Solana network; prices and charts from Jupiter; fallback data from DEX Screener and GeckoTerminal; risk data from RugCheck; the S&amp;P 500, Nasdaq 100 and gold benchmarks follow tokenised funds on Solana. Token names and logos belong to their projects and are shown only to identify them.</span>
-    <span>Bagscope is an independent project. It is not affiliated with or endorsed by Phantom, Solana, Jupiter, DEX Screener, GeckoTerminal, RugCheck, X or xAI; their names are used only to describe what the app works with.</span>
-    <span>Nothing in the app or on this page is financial advice. Risk scores and benchmarks are tools for your own judgement, and a low risk score is not a guarantee. Crypto assets can lose all their value.</span>
-  </footer>
-</div>
+  <!-- Support -->
+  <section class="support gut" id="support" data-reveal>
+    <h2>Support the dev</h2>
+    <p>Bagscope is free. If it saves you time or a rug, a tip in SOL keeps it going. Send from your own wallet on the Solana network.</p>
+    <div class="addr">
+      <code id="addr">3iVACqzJpf2cKU3UD6fA4ca2diSATs8J9qvozV9QD7f5</code>
+      <button class="btn ghost" id="copy" type="button">Copy address</button>
+    </div>
+    <div class="status" id="status" role="status"></div>
+  </section>
 
+</main>
+
+<footer class="gut">
+  <span>Bagscope is free software released under the MIT licence, provided as is and without warranty. It includes open-source libraries and fonts under their own licences; the full notices ship with the app under Settings, About and legal.</span>
+  <span>Data: balances and transactions from the Solana network; prices and charts from Jupiter; fallback data from DEX Screener and GeckoTerminal; risk data from RugCheck; the S&amp;P 500, Nasdaq 100 and gold benchmarks follow tokenised funds on Solana. Token names belong to their projects and are shown only to identify them.</span>
+  <span>Bagscope is an independent project. It is not affiliated with or endorsed by Phantom, Solana, Jupiter, DEX Screener, GeckoTerminal, RugCheck, X or xAI.</span>
+  <span>Nothing on this page or in the app is financial advice. Risk scores are tools for your own judgement, and a low score is not a guarantee. Crypto assets can lose all their value.</span>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
 <script>
+(function () {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const narrow = () => innerWidth < 900;
+  const phoneLike = matchMedia('(pointer: coarse)').matches && innerWidth < 900;
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const ease = (t) => 1 - Math.pow(1 - t, 3);
+  const money = (n) => '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const hasGsap = !!(window.gsap && window.ScrollTrigger);
+  if (hasGsap) gsap.registerPlugin(ScrollTrigger);
+
+  /* ---------- download ---------- */
   // The installer is stored on this site in 14 parts (GitHub limits single uploads).
-  // The button fetches them, joins them into one file and hands it to the browser to save.
-  const PARTS = 14
-  const SIZE = 112153333
-  const dlButton = document.getElementById('download')
-  const dlStatus = document.getElementById('dlstatus')
-  let dlBusy = false
-  dlButton.addEventListener('click', async (e) => {
-    e.preventDefault()
-    e.stopImmediatePropagation()
-    if (dlBusy) return
-    dlBusy = true
-    const label = dlButton.textContent
+  // A Download button fetches them, joins them into one file and hands it to the browser to save.
+  const PARTS = 14, SIZE = 112153333;
+  const statusEls = [document.getElementById('dlstatus'), document.getElementById('dlstatus2')];
+  const say = (t) => statusEls.forEach((s) => { if (s) s.textContent = t; });
+  let dlBusy = false;
+  const dlButtons = [...document.querySelectorAll('.dl')];
+  if (phoneLike) dlButtons.forEach((b) => { b.textContent = b.classList.contains('small') ? 'Get link' : 'Copy link for my PC'; });
+  async function download(btn) {
+    if (dlBusy) return;
+    dlBusy = true;
+    const label = btn.textContent;
     try {
-      const parts = []
-      let got = 0
+      const parts = []; let got = 0;
       for (let i = 1; i <= PARTS; i++) {
-        const res = await fetch('dl/p' + i + '.bin')
-        if (!res.ok) throw new Error('part ' + i + ' answered ' + res.status)
-        const buf = await res.arrayBuffer()
-        parts.push(buf)
-        got += buf.byteLength
-        dlButton.textContent = 'Downloading ' + Math.round((got / SIZE) * 100) + '%'
-        dlStatus.textContent = Math.round(got / 1048576) + ' of ' + Math.round(SIZE / 1048576) + ' MB'
+        const res = await fetch('dl/p' + i + '.bin');
+        if (!res.ok) throw new Error('part ' + i + ' answered ' + res.status);
+        const buf = await res.arrayBuffer();
+        parts.push(buf); got += buf.byteLength;
+        btn.textContent = 'Downloading ' + Math.round(got / SIZE * 100) + '%';
+        say(Math.round(got / 1048576) + ' of ' + Math.round(SIZE / 1048576) + ' MB');
       }
-      if (got !== SIZE) throw new Error('the file arrived incomplete')
-      const url = URL.createObjectURL(new Blob(parts, { type: 'application/zip' }))
-      const a = document.createElement('a')
-      a.href = url
-      a.download = 'Bagscope.zip'
-      document.body.append(a)
-      a.click()
-      a.remove()
-      setTimeout(() => URL.revokeObjectURL(url), 120000)
-      dlStatus.textContent = 'Bagscope.zip is in your Downloads folder. Open it and run "Install Bagscope".'
+      if (got !== SIZE) throw new Error('the file arrived incomplete');
+      const url = URL.createObjectURL(new Blob(parts, { type: 'application/zip' }));
+      const a = document.createElement('a'); a.href = url; a.download = 'Bagscope.zip';
+      document.body.append(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 120000);
+      say('Bagscope.zip is in your Downloads folder. Open it and run "Install Bagscope".');
     } catch (err) {
-      dlStatus.textContent = 'The download could not finish (' + (err && err.message ? err.message : 'network error') + '). Check your connection and press the button again.'
-    } finally {
-      dlButton.textContent = label
-      dlBusy = false
-    }
-  }, true)
-  // Smooth scrolling for the section links. Done in script as well as CSS so it behaves
-  // the same wherever the page is embedded, and respects the reduced-motion setting.
-  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches
-  for (const a of document.querySelectorAll('a[href^="#"]')) {
-    a.addEventListener('click', (e) => {
-      const target = document.getElementById(a.getAttribute('href').slice(1))
-      if (!target) return
-      e.preventDefault()
-      target.scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'start' })
-    })
+      say('The download could not finish (' + (err && err.message ? err.message : 'network error') + '). Check your connection and press the button again.');
+    } finally { btn.textContent = label; dlBusy = false; }
   }
+  async function copyLink() {
+    const link = 'https://bagscope.org';
+    try {
+      if (navigator.share) { await navigator.share({ title: 'Bagscope', text: 'Bagscope for Windows', url: link }); return; }
+      await navigator.clipboard.writeText(link);
+      say('Link copied. Open bagscope.org on your Windows PC to download.');
+    } catch (e) { say('Open bagscope.org on your Windows PC to download.'); }
+  }
+  dlButtons.forEach((b) => b.addEventListener('click', (e) => { e.preventDefault(); phoneLike ? copyLink() : download(b); }));
 
   document.getElementById('copy').addEventListener('click', async () => {
-    const text = document.getElementById('addr').textContent
-    const status = document.getElementById('status')
-    try {
-      await navigator.clipboard.writeText(text)
-      status.textContent = 'Address copied.'
-    } catch (e) {
-      const range = document.createRange()
-      range.selectNodeContents(document.getElementById('addr'))
-      const sel = getSelection()
-      sel.removeAllRanges()
-      sel.addRange(range)
-      status.textContent = 'Copying is blocked here. The address is selected: press Ctrl+C.'
+    const status = document.getElementById('status');
+    try { await navigator.clipboard.writeText(document.getElementById('addr').textContent); status.textContent = 'Address copied.'; }
+    catch (e) {
+      const r = document.createRange(); r.selectNodeContents(document.getElementById('addr'));
+      const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      status.textContent = 'Copying is blocked here. The address is selected: press Ctrl+C.';
     }
-  })
+  });
+
+  /* ---------- smooth scroll (Lenis) sharing GSAP's clock ---------- */
+  let lenis = null;
+  if (!reduce && hasGsap && window.Lenis) {
+    lenis = new Lenis({ lerp: 0.09 });
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add((t) => lenis.raf(t * 1000));
+    gsap.ticker.lagSmoothing(0);
+  }
+  document.querySelectorAll('a[href^="#"]:not(.dl)').forEach((a) => a.addEventListener('click', (e) => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (!target) return;
+    e.preventDefault();
+    if (lenis) lenis.scrollTo(target, { offset: -70, duration: 1.4 });
+    else target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
+  }));
+
+
+  /* ---------- entrances ---------- */
+  if (hasGsap && !reduce) {
+    const title = document.getElementById('title');
+    title.querySelectorAll('.ln').forEach((ln) => {
+      ln.innerHTML = ln.textContent.split(' ').map((w) => '<span class="w">' + w + '</span>').join(' ');
+    });
+    gsap.from('#title .w', { yPercent: 115, rotate: 4, duration: 1.2, ease: 'expo.out', stagger: 0.07, delay: 0.1 });
+    gsap.from('.hero-copy .lede, .hero-copy .cta, .hero-copy .meta', { y: 24, opacity: 0, duration: 0.9, ease: 'power3.out', stagger: 0.1, delay: 0.55 });
+    gsap.from('.top', { y: -20, opacity: 0, duration: 0.8, ease: 'power3.out', delay: 0.3 });
+
+    gsap.utils.toArray('[data-reveal]').forEach((sec) => {
+      const kids = sec.matches('.row') ? sec.querySelectorAll('.q, h3, p, li') : sec.querySelectorAll('h2, h3, b, span, p, li, summary, ol li, .btn, code');
+      if (kids.length) gsap.from(kids, { y: 36, opacity: 0, duration: 0.9, ease: 'power3.out', stagger: 0.05, scrollTrigger: { trigger: sec, start: 'top 82%', once: true } });
+    });
+    // screenshots rise and settle as they scroll in, always shown whole
+    gsap.utils.toArray('.shot').forEach((f) => {
+      gsap.fromTo(f, { y: 70, opacity: 0, scale: 0.94 }, { y: 0, opacity: 1, scale: 1, ease: 'power2.out', scrollTrigger: { trigger: f, start: 'top 95%', end: 'top 55%', scrub: true } });
+    });
+  }
+
+  /* ---------- scroll progress per scene ---------- */
+  function track(id, onP) {
+    const sec = document.getElementById(id);
+    const fades = [...sec.querySelectorAll('.fade')];
+    const st = { p: reduce ? 1 : 0, visible: true };
+    const apply = () => { fades.forEach((f) => f.classList.toggle('on', st.p >= parseFloat(f.dataset.at || 0))); onP && onP(st.p); };
+    if (hasGsap && !reduce) {
+      ScrollTrigger.create({ trigger: sec, start: 'top top', end: 'bottom bottom', scrub: true, onUpdate: (s) => { st.p = s.progress; apply(); } });
+      ScrollTrigger.create({ trigger: sec, start: 'top bottom', end: 'bottom top', onToggle: (s) => { st.visible = s.isActive; } });
+    }
+    apply();
+    return st;
+  }
+  function sizer(canvas, cb) {
+    new ResizeObserver(() => cb(canvas.clientWidth, canvas.clientHeight)).observe(canvas);
+    cb(canvas.clientWidth, canvas.clientHeight);
+  }
+  let mx = 0, my = 0;
+  addEventListener('pointermove', (e) => { mx = e.clientX / innerWidth - 0.5; my = e.clientY / innerHeight - 0.5; }, { passive: true });
+
+  /* ---------- hero panel: an example dashboard that keeps ticking ---------- */
+  (function () {
+    const canvas = document.getElementById('mini');
+    const ctx = canvas.getContext('2d');
+    const totalEl = document.getElementById('hcTotal');
+    const changeEl = document.getElementById('hcChange');
+    const footEl = document.getElementById('hcFoot');
+    const OPEN = 53593.65 - 1284.2; // example value at the start of the day
+    const setTotal = (v) => {
+      totalEl.textContent = money(v);
+      const d = v - OPEN, pct = d / OPEN * 100;
+      changeEl.textContent = (d >= 0 ? '+' : '−') + money(Math.abs(d)) + ' (' + (d >= 0 ? '+' : '−') + Math.abs(pct).toFixed(2) + '%) today';
+      changeEl.style.color = d >= 0 ? 'var(--up)' : 'var(--down)';
+    };
+    const rows = [...document.querySelectorAll('.hc-row')];
+    const TOTAL = 53593.65;
+    let seed = 5; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    const bars = []; let price = 50;
+    const push = () => {
+      const o = price; price = clamp(price + (rnd() - 0.46) * 6, 20, 80);
+      bars.push({ o, c: price, h: Math.max(o, price) + rnd() * 3, l: Math.min(o, price) - rnd() * 3, born: performance.now() });
+      if (bars.length > 40) bars.shift();
+    };
+    for (let i = 0; i < 32; i++) push();
+    bars.forEach((b) => { b.born = -1e9; });
+    let W = 0, H = 150, dpr = 1;
+    sizer(canvas, (w, h) => { dpr = Math.min(devicePixelRatio, 2); W = w; H = h || 150; canvas.width = w * dpr; canvas.height = H * dpr; });
+    function draw(t) {
+      if (!W) return;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+      let lo = Infinity, hi = -Infinity; bars.forEach((b) => { lo = Math.min(lo, b.l); hi = Math.max(hi, b.h); });
+      const y = (v) => H - 8 - (v - lo) / (hi - lo) * (H - 16);
+      const cw = W / 40;
+      // area under the closes
+      ctx.beginPath(); bars.forEach((b, i) => { const x = i * cw + cw / 2; i ? ctx.lineTo(x, y(b.c)) : ctx.moveTo(x, y(b.c)); });
+      ctx.lineTo((bars.length - 1) * cw + cw / 2, H); ctx.lineTo(cw / 2, H); ctx.closePath();
+      ctx.fillStyle = 'rgba(62,227,154,.07)'; ctx.fill();
+      bars.forEach((b, i) => {
+        const k = ease(clamp((t - b.born) / 600, 0, 1));
+        const x = i * cw + cw / 2, cl = b.o + (b.c - b.o) * k, col = cl >= b.o ? '#3ee39a' : '#ff5f6d';
+        ctx.globalAlpha = 0.35 + 0.65 * (i / bars.length);
+        ctx.strokeStyle = col; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(x, y(b.o + (b.h - b.o) * k)); ctx.lineTo(x, y(b.o + (b.l - b.o) * k)); ctx.stroke();
+        ctx.fillStyle = col; ctx.fillRect(x - cw * 0.32, y(Math.max(b.o, cl)), cw * 0.64, Math.max(2, Math.abs(y(b.o) - y(cl))));
+      });
+      ctx.globalAlpha = 1;
+      const last = bars[bars.length - 1], lx = (bars.length - 1) * cw + cw / 2, ly = y(last.c);
+      const pulse = (Math.sin(t / 300) + 1) / 2;
+      ctx.fillStyle = 'rgba(62,227,154,' + (0.25 * (1 - pulse)) + ')'; ctx.beginPath(); ctx.arc(lx, ly, 6 + pulse * 8, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#3ee39a'; ctx.beginPath(); ctx.arc(lx, ly, 3.5, 0, Math.PI * 2); ctx.fill();
+    }
+    let visible = true;
+    new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(canvas);
+    (function loop(t) { requestAnimationFrame(loop); if (visible) draw(t); })(0);
+    if (reduce) return;
+    // a new candle every 1.4s; the total and one coin row move with it
+    let shown = TOTAL, secs = 0;
+    setInterval(() => {
+      if (!visible) return;
+      push();
+      const delta = (price - bars[bars.length - 2].c) * 9;
+      const from = shown; shown = Math.max(TOTAL * 0.97, Math.min(TOTAL * 1.03, shown + delta));
+      if (hasGsap) { const o = { v: from }; gsap.to(o, { v: shown, duration: 0.8, ease: 'power2.out', onUpdate: () => setTotal(o.v) }); }
+      else setTotal(shown);
+      const r = rows[Math.floor(rnd() * rows.length)]; r.classList.remove('flash'); void r.offsetWidth; r.classList.add('flash');
+      secs = 0; footEl.textContent = 'Updated just now';
+    }, 1400);
+    setInterval(() => { secs++; if (secs > 1) footEl.textContent = 'Updated ' + secs + 's ago'; }, 1000);
+    if (hasGsap) {
+      const o = { v: 0 };
+      gsap.to(o, { v: TOTAL, duration: 1.8, ease: 'expo.out', delay: 0.5, onUpdate: () => { totalEl.textContent = money(o.v); }, onComplete: () => setTotal(TOTAL) });
+      gsap.from('#heroCard', { y: 50, opacity: 0, rotateX: 8, duration: 1.2, ease: 'expo.out', delay: 0.35 });
+      gsap.from('.hc-row', { x: 30, opacity: 0, duration: 0.7, ease: 'power3.out', stagger: 0.08, delay: 0.9 });
+    }
+  })();
+
+  /* ---------- the chart that draws itself as you scroll ---------- */
+  (function () {
+    const canvas = document.getElementById('chart');
+    const ctx = canvas.getContext('2d');
+    const steps = [...document.querySelectorAll('#rail li')];
+    const toast = document.getElementById('toast');
+    const n = 84, marks = { entry: 12, alert: 38, pnl: 47, rug: 58 };
+    let seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    const C = []; let p0 = 4.1;
+    for (let i = 0; i < n; i++) {
+      let drift = 0.05;
+      if (i > 18 && i < 28) drift = -0.1; if (i >= 28 && i < 48) drift = 0.42; if (i >= 52 && i < 66) drift = -0.5; if (i >= 66) drift = 0.05;
+      const o = p0, c = Math.max(1.2, o + drift + (rnd() - 0.5) * 0.9);
+      C.push({ o, c, h: Math.max(o, c) + rnd() * 0.5, l: Math.max(0.8, Math.min(o, c) - rnd() * 0.5), v: 0.3 + rnd() * 0.7 + (i >= 28 && i < 48 ? 0.6 : 0) + (i >= 52 && i < 66 ? 0.9 : 0) });
+      p0 = c;
+    }
+    const alertLevel = 9.4;
+    const UP = '#3ee39a', DOWN = '#ff5f6d', GOLD = '#ffc857';
+    let W = 0, H = 0, dpr = 1;
+    const st = track('story');
+    sizer(canvas, (w, h) => { dpr = Math.min(devicePixelRatio, 2); W = w; H = h; canvas.width = w * dpr; canvas.height = h * dpr; });
+    const fmt = (v) => '$' + (v / 1000).toFixed(4);
+    function pill(x, yy, text, bg, fg, alignRight) {
+      ctx.font = '600 13px Geist, system-ui, sans-serif';
+      const w = ctx.measureText(text).width + 18, h = 26, x0 = alignRight ? x - w : x;
+      ctx.fillStyle = bg; ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(x0, yy - h / 2, w, h, 13); else ctx.rect(x0, yy - h / 2, w, h);
+      ctx.fill(); ctx.fillStyle = fg; ctx.textBaseline = 'middle'; ctx.fillText(text, x0 + 9, yy + 1);
+    }
+    function draw(p, t) {
+      if (!W) return;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, W, H);
+      const pad = narrow() ? 12 : 24, right = narrow() ? 92 : 110;
+      const top = H * 0.2, bottom = H * 0.78, volTop = H * 0.84, volBottom = H * 0.95;
+      const shown = 8 + clamp(p * 1.08, 0, 1) * (n - 8);
+      const full = Math.floor(shown), frac = shown - full, last = Math.max(0, Math.ceil(shown) - 1);
+      const visible = narrow() ? 30 : 56;
+      const start = Math.max(0, Math.min(n - visible, Math.ceil(shown) - visible + 3));
+      const cw = (W - pad - right) / visible;
+      let lo = Infinity, hi = -Infinity, vmax = 0;
+      for (let i = start; i < Math.min(n, start + visible); i++) { lo = Math.min(lo, C[i].l); hi = Math.max(hi, C[i].h); vmax = Math.max(vmax, C[i].v); }
+      hi = Math.max(hi, alertLevel + 0.6); lo -= 0.3;
+      const y = (v) => bottom - (v - lo) / (hi - lo) * (bottom - top);
+      const X = (i) => pad + (i - start) * cw + cw / 2;
+      const pulse = reduce ? 0.5 : (Math.sin(t / 380) + 1) / 2;
+
+      // the current price, huge and faint, behind everything
+      let lastC = C[0].o, lastO = C[0].o;
+      if (shown > 0) { const d = C[last], k = last < full ? 1 : ease(frac); lastO = d.o; lastC = d.o + (d.c - d.o) * k; }
+      ctx.font = '800 ' + Math.round(Math.min(W * 0.2, H * 0.3)) + 'px "Bricolage Grotesque", sans-serif';
+      ctx.fillStyle = '#0c121d'; ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'right';
+      ctx.fillText(fmt(lastC), W - pad, bottom - 8); ctx.textAlign = 'left';
+
+      // horizontal grid
+      ctx.strokeStyle = '#101826'; ctx.lineWidth = 1;
+      for (let g = 0; g <= 5; g++) { const yy = top + (bottom - top) * g / 5; ctx.beginPath(); ctx.moveTo(pad, yy); ctx.lineTo(W - right + 8, yy); ctx.stroke(); }
+
+      // alert level
+      const crossed = shown > marks.alert;
+      ctx.setLineDash([8, 7]); ctx.strokeStyle = crossed ? GOLD : '#3d3626'; ctx.lineWidth = crossed ? 2 : 1;
+      ctx.beginPath(); ctx.moveTo(pad, y(alertLevel)); ctx.lineTo(W - right + 8, y(alertLevel)); ctx.stroke(); ctx.setLineDash([]);
+      pill(pad + 4, y(alertLevel) - 18, crossed ? 'Alert fired · mcap 5M' : 'Your alert · mcap 5M', crossed ? GOLD : '#1a1f2a', crossed ? '#1d1400' : GOLD);
+
+      // closing-price line, faint, under the candles
+      ctx.strokeStyle = 'rgba(238,243,241,.10)'; ctx.lineWidth = 2; ctx.beginPath();
+      for (let i = start; i <= last && i < n; i++) { const k = i < full ? 1 : ease(frac); const v = C[i].o + (C[i].c - C[i].o) * k; i === start ? ctx.moveTo(X(i), y(v)) : ctx.lineTo(X(i), y(v)); }
+      ctx.stroke();
+
+      // candles and volume
+      for (let i = start; i < Math.min(n, Math.ceil(shown)); i++) {
+        const k = i < full ? 1 : ease(frac), d = C[i], x = X(i);
+        const cl = d.o + (d.c - d.o) * k, hh = d.o + (d.h - d.o) * k, ll = d.o + (d.l - d.o) * k;
+        const col = cl >= d.o ? UP : DOWN, isLast = i === last;
+        ctx.save();
+        if (isLast) { ctx.shadowColor = col; ctx.shadowBlur = 18 + pulse * 18; }
+        ctx.strokeStyle = col; ctx.lineWidth = Math.max(1.2, cw * 0.09);
+        ctx.beginPath(); ctx.moveTo(x, y(hh)); ctx.lineTo(x, y(ll)); ctx.stroke();
+        ctx.fillStyle = col; ctx.beginPath();
+        const bw = cw * 0.66, by = y(Math.max(d.o, cl)), bh = Math.max(3, Math.abs(y(d.o) - y(cl)));
+        if (ctx.roundRect) ctx.roundRect(x - bw / 2, by, bw, bh, Math.min(4, bw / 3)); else ctx.rect(x - bw / 2, by, bw, bh);
+        ctx.fill(); ctx.restore();
+        ctx.globalAlpha = isLast ? 0.7 : 0.28; ctx.fillStyle = col;
+        const vh = d.v / vmax * (volBottom - volTop) * k; ctx.fillRect(x - bw / 2, volBottom - vh, bw, vh); ctx.globalAlpha = 1;
+      }
+
+      // entry marker and the profit bracket from entry to the peak
+      if (shown > marks.entry + 1 && marks.entry >= start) {
+        const ex = X(marks.entry), ey = y(C[marks.entry].c);
+        ctx.strokeStyle = 'rgba(62,227,154,.45)'; ctx.setLineDash([2, 6]); ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(W - right + 8, ey); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = UP; ctx.beginPath(); ctx.arc(ex, ey, 6, 0, Math.PI * 2); ctx.fill();
+        pill(ex + 12, ey + 22, 'Entry · ' + fmt(C[marks.entry].c), '#0f2a1d', UP);
+        if (shown > marks.pnl + 1 && marks.pnl >= start) {
+          const px = X(marks.pnl), py = y(C[marks.pnl].h);
+          ctx.strokeStyle = UP; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(px + cw, ey); ctx.lineTo(px + cw + 10, ey); ctx.lineTo(px + cw + 10, py); ctx.lineTo(px + cw, py); ctx.stroke();
+          pill(px + cw + 18, (ey + py) / 2, '+' + Math.round((C[marks.pnl].h / C[marks.entry].c - 1) * 100) + '% since entry', UP, '#04140c');
+        }
+      }
+
+      // rug warning: a pulsing ring on the candle where the developer wallet sold
+      if (shown > marks.rug + 1 && marks.rug >= start) {
+        const rx = X(marks.rug), ry = y((C[marks.rug].h + C[marks.rug].l) / 2);
+        ctx.strokeStyle = DOWN; ctx.lineWidth = 2;
+        ctx.globalAlpha = 1 - pulse * 0.6; ctx.beginPath(); ctx.arc(rx, ry, 16 + pulse * 14, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1;
+        pill(rx + 30, ry - 30, 'Rug check · dev sold 40%', DOWN, '#2a0508');
+      }
+
+      // crosshair on the live candle
+      const ly = y(lastC), lx = X(last);
+      ctx.strokeStyle = 'rgba(238,243,241,.28)'; ctx.setLineDash([3, 5]); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(pad, ly); ctx.lineTo(W - right + 8, ly); ctx.moveTo(lx, top); ctx.lineTo(lx, volBottom); ctx.stroke(); ctx.setLineDash([]);
+      pill(W - right + 14, ly, fmt(lastC), lastC >= lastO ? UP : DOWN, '#04140c');
+
+      // which moment we are at
+      const step = shown <= marks.alert ? 0 : shown <= marks.pnl + 1 ? 1 : shown <= marks.rug + 1 ? 2 : 3;
+      steps.forEach((li, i) => { li.classList.toggle('on', i === step); li.classList.toggle('done', i < step); });
+      toast.classList.toggle('on', crossed && shown < marks.rug + 4);
+    }
+    (function loop(t) { requestAnimationFrame(loop); if (st.visible) draw(st.p, t); })(0);
+  })();
+
+  if (hasGsap) addEventListener('load', () => ScrollTrigger.refresh());
+})();
 </script>
 </body>
 </html>
