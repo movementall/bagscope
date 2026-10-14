@@ -470,7 +470,7 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
   /* ---------- download ---------- */
   // The installer is stored on this site in 14 parts (GitHub limits single uploads).
   // A Download button fetches them, joins them into one file and hands it to the browser to save.
-  const PARTS = 14, SIZE = 112153333;
+  const PARTS = 14, SIZE = 112152181, PART_DIR = 'dl/v020/';
   const statusEls = [document.getElementById('dlstatus'), document.getElementById('dlstatus2')];
   const say = (t) => statusEls.forEach((s) => { if (s) s.textContent = t; });
   let dlBusy = false;
@@ -483,7 +483,7 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
     try {
       const parts = []; let got = 0;
       for (let i = 1; i <= PARTS; i++) {
-        const res = await fetch('dl/p' + i + '.bin');
+        const res = await fetch(PART_DIR + 'p' + i + '.bin');
         if (!res.ok) throw new Error('part ' + i + ' answered ' + res.status);
         const buf = await res.arrayBuffer();
         parts.push(buf); got += buf.byteLength;
