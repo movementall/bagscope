@@ -714,11 +714,20 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
         ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(W - right + 8, ey); ctx.stroke(); ctx.setLineDash([]);
         if (onScreen) { ctx.fillStyle = UP; ctx.beginPath(); ctx.arc(ex, ey, 6, 0, Math.PI * 2); ctx.fill(); }
         pill(ex + (onScreen ? 12 : 4), ey + 22, 'Entry · ' + fmt(C[marks.entry].c), '#0f2a1d', UP);
+        // the gain: a soft shaded area from the entry price up to the peak, fading in as the move happens
         if (shown > marks.pnl + 1) {
-          const bx = (marks.pnl >= start ? X(marks.pnl) : pad) + cw + 6, py = y(C[marks.pnl].h);
-          ctx.strokeStyle = UP; ctx.lineWidth = 2;
-          ctx.beginPath(); ctx.moveTo(bx - 6, ey); ctx.lineTo(bx, ey); ctx.lineTo(bx, py); ctx.lineTo(bx - 6, py); ctx.stroke();
-          pill(bx + 10, (ey + py) / 2, '+' + Math.round((C[marks.pnl].h / C[marks.entry].c - 1) * 100) + '% since entry', UP, '#04140c');
+          const x0 = ex, x1 = (marks.pnl >= start ? X(marks.pnl) : pad) + cw / 2, peak = y(C[marks.pnl].h);
+          const fadeIn = clamp((shown - marks.pnl - 1) / 4, 0, 1);
+          ctx.globalAlpha = fadeIn;
+          ctx.fillStyle = 'rgba(62,227,154,.09)';
+          ctx.fillRect(x0, peak, x1 - x0, ey - peak);
+          ctx.strokeStyle = 'rgba(62,227,154,.55)'; ctx.setLineDash([4, 5]); ctx.lineWidth = 1.5;
+          ctx.beginPath(); ctx.moveTo(x0, peak); ctx.lineTo(x1, peak); ctx.stroke(); ctx.setLineDash([]);
+          const label = '+' + Math.round((C[marks.pnl].h / C[marks.entry].c - 1) * 100) + '% since entry';
+          ctx.font = '600 13px Geist, system-ui, sans-serif';
+          const w = ctx.measureText(label).width + 18;
+          pill(clamp((x0 + x1) / 2 - w / 2, pad, W - right - w), peak - 18, label, UP, '#04140c');
+          ctx.globalAlpha = 1;
         }
       }
 
