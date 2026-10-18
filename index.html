@@ -567,7 +567,8 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
     gsap.from('.top', { y: -20, opacity: 0, duration: 0.8, ease: 'power3.out', delay: 0.3 });
 
     gsap.utils.toArray('[data-reveal]').forEach((sec) => {
-      const kids = sec.matches('.row') ? sec.querySelectorAll('.q, h3, p, li') : sec.querySelectorAll('h2, h3, b, span, p, li, summary, ol li, .btn, code');
+      // .cta (the button's wrapper) rather than .btn: the button's own CSS hover transition on transform would fight the tween and leave it offset
+      const kids = sec.matches('.row') ? sec.querySelectorAll('.q, h3, p, li') : sec.querySelectorAll('h2, h3, b, span, p, li, summary, ol li, .cta, code');
       if (kids.length) gsap.from(kids, { y: 36, opacity: 0, duration: 0.9, ease: 'power3.out', stagger: 0.05, scrollTrigger: { trigger: sec, start: 'top 82%', once: true } });
     });
     // screenshots rise and settle as they scroll in, always shown whole
