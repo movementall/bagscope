@@ -3,13 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Bagscope is a free, open-source Windows app for Solana meme coin holders: every Phantom wallet in one real total, rug-risk checks, automatic entries and alerts. View-only.">
+<meta name="description" content="Free, open-source Windows app for Solana meme coin holders. Every Phantom wallet in one real total, rug-risk checks and alerts. View-only, no account.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bagscope.org/">
+<meta property="og:site_name" content="Bagscope">
 <meta property="og:title" content="Bagscope">
 <meta property="og:description" content="Every Phantom wallet. One real total. Free, open source, view-only.">
-<meta property="og:image" content="https://bagscope.org/shots/dashboard.png">
+<meta property="og:image" content="https://bagscope.org/shots/share.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Bagscope dashboard: total across wallets, performance tiles and a portfolio chart">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#070a10">
+<link rel="canonical" href="https://bagscope.org/">
 <link rel="icon" href="icon.png">
-<title>Bagscope</title>
+<link rel="apple-touch-icon" href="icon.png">
+<title>Bagscope: Solana wallet tracker and rug checks for Windows</title>
+<link rel="preload" href="assets/fonts/BricolageGrotesque-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/fonts.css">
 <style>
 /* Layout: a plain hero, then a pinned chart that draws itself and carries the features,
@@ -24,12 +34,13 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink)}
+html{scroll-padding-top:84px}
 body{font-family:var(--text);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:clip}
 a{color:var(--ink)}
 p{margin:0}
 h1,h2,h3{font-family:var(--display);font-weight:800;letter-spacing:-0.035em;line-height:.95;margin:0;text-wrap:balance}
 :focus-visible{outline:2px solid var(--up);outline-offset:3px}
-.gut{padding-inline:var(--gut)}
+.gut{padding-left:calc(var(--gut) + env(safe-area-inset-left,0px));padding-right:calc(var(--gut) + env(safe-area-inset-right,0px))}
 html.lenis,html.lenis body{height:auto}
 .lenis.lenis-smooth{scroll-behavior:auto!important}
 
@@ -52,7 +63,7 @@ html.lenis,html.lenis body{height:auto}
 .stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 
 /* hero */
-.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(24px,4vw,64px);align-items:center;padding-inline:0 var(--gut);padding-block:calc(130px + env(safe-area-inset-top,0px)) 60px}
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(24px,4vw,64px);align-items:center;padding-inline:0 var(--gut);padding-block:calc(130px + env(safe-area-inset-top,0px)) 40px}
 .hero-copy{display:flex;flex-direction:column;gap:22px;min-width:0}
 .hero-card{background:var(--panel);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:10px;box-shadow:0 30px 80px rgba(0,0,0,.45);min-width:0;font-variant-numeric:tabular-nums}
 .hc-top{display:flex;justify-content:space-between;font-size:14px;color:var(--soft)}
@@ -64,7 +75,7 @@ html.lenis,html.lenis body{height:auto}
 .menu{display:none;position:relative}
 .menu summary{list-style:none;cursor:pointer;min-height:40px;display:flex;align-items:center;padding:0 14px;border-radius:999px;background:var(--raised);font-size:15px}
 .menu summary::-webkit-details-marker{display:none}
-.menu-list{position:absolute;right:0;top:48px;background:var(--panel);border-radius:12px;padding:8px;display:flex;flex-direction:column;min-width:200px;box-shadow:0 18px 50px rgba(0,0,0,.5)}
+.menu-list{position:absolute;right:0;top:54px;background:var(--panel);border-radius:12px;padding:8px;display:flex;flex-direction:column;min-width:200px;box-shadow:0 18px 50px rgba(0,0,0,.5)}
 .menu-list a{padding:12px 14px;text-decoration:none;border-radius:8px}
 .menu-list a:hover{background:var(--raised)}
 .legal{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:14.5px}
@@ -80,28 +91,27 @@ html.lenis,html.lenis body{height:auto}
 .hc-row .c.up{color:var(--up)} .hc-row .c.dn{color:var(--down)}
 .hc-row .r{justify-self:end;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px}
 .r.low{background:#10291d;color:var(--up)} .r.mid{background:#33290f;color:var(--gold)} .r.high{background:#36141a;color:var(--down)}
-.hc-row.flash .v{animation:flash .9s ease}
-@keyframes flash{30%{color:var(--up)}}
 .hc-foot{font-size:13px;color:var(--soft)}
 .hero-copy h1{font-size:clamp(42px,min(9.2vw,13vh),148px);max-width:11ch}
 .hero-copy h1 .ln{display:block;overflow:hidden;padding-bottom:.07em}
 .hero-copy h1 .w{display:inline-block}
 .hero-copy .lede{max-width:44ch;font-size:clamp(17px,1.5vw,20px)}
 .cta{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.short{display:none}
 .meta{font-size:14px;color:var(--soft)}
 .status{font-size:14px;color:var(--up);min-height:1.4em}
 .fade{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
 .fade.on{opacity:1;transform:none}
 
 /* safety */
-.safety{padding-block:140px 120px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(20px,3vw,40px)}
+.safety{padding-block:100px 120px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(20px,3vw,40px)}
 .safety h2{grid-column:1/-1;font-size:clamp(40px,6vw,88px);max-width:14ch;margin-bottom:24px}
 .safety div{display:flex;flex-direction:column;gap:8px}
 .safety b{font:700 clamp(22px,2vw,28px) var(--display);letter-spacing:-0.025em}
 .safety span{color:var(--soft)}
 
 /* chart story */
-#story{height:520vh}
+#story{height:360vh}
 #story .stage{display:grid;grid-template-columns:minmax(300px,4fr) minmax(0,8fr);padding-top:calc(72px + env(safe-area-inset-top,0px))}
 .story-side{padding:clamp(24px,5vh,56px) 0 32px var(--gut);display:flex;flex-direction:column;gap:clamp(20px,4vh,36px);min-width:0}
 .story-side h2{font-size:clamp(32px,min(3.8vw,7vh),60px)}
@@ -140,12 +150,12 @@ html.lenis,html.lenis body{height:auto}
 .text li{padding-left:24px;position:relative}
 .text li::before{content:"";position:absolute;left:2px;top:.6em;width:10px;height:10px;border-radius:2px;background:var(--up)}
 .shot{margin:0;overflow:hidden;border-radius:10px;background:var(--panel)}
+.shot picture{display:block}
 .shot img{display:block;width:100%;height:auto}
-.caption{font-size:14px;color:var(--soft)}
 
 /* also inside */
 .more{padding-block:120px 40px}
-.more h2{font-size:clamp(40px,6vw,88px);margin-bottom:48px}
+.more h2{font-size:clamp(32px,4.4vw,56px);margin-bottom:48px}
 .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:36px clamp(20px,3vw,48px)}
 .grid div{display:flex;flex-direction:column;gap:6px;min-width:0}
 .grid b{font:700 21px var(--display);letter-spacing:-0.02em}
@@ -153,41 +163,37 @@ html.lenis,html.lenis body{height:auto}
 
 /* install */
 .install{padding-block:140px 40px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:clamp(28px,5vw,72px);align-items:start}
-.install h2{font-size:clamp(40px,6vw,88px);margin-bottom:28px}
+.install h2{font-size:clamp(32px,4.4vw,56px);margin-bottom:28px}
 ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:22px}
 ol.steps li{counter-increment:s;display:grid;grid-template-columns:44px minmax(0,1fr);gap:16px}
 ol.steps li::before{content:counter(s);width:44px;height:44px;border-radius:50%;background:var(--up);color:var(--up-ink);display:grid;place-items:center;font:800 19px var(--display)}
 ol.steps b{display:block;font:700 20px var(--display);letter-spacing:-0.02em}
 ol.steps span{color:var(--soft)}
 .note{margin-top:28px;padding:18px 20px;background:var(--panel);font-size:15px;color:var(--soft)}
+.sha{font-family:ui-monospace,Consolas,monospace;font-size:12px;overflow-wrap:anywhere;user-select:all}
 
 /* questions */
 .faq{padding-block:140px 40px;max-width:900px}
-.faq h2{font-size:clamp(40px,6vw,88px);margin-bottom:28px}
-details{padding-block:18px;background:transparent}
-details+details{border-top:2px solid var(--panel)}
-summary{cursor:pointer;font:700 clamp(19px,1.8vw,23px) var(--display);letter-spacing:-0.02em;list-style:none;display:flex;justify-content:space-between;gap:16px;align-items:center;min-height:44px}
-summary::-webkit-details-marker{display:none}
-summary::after{content:"+";color:var(--up);font-size:28px;font-weight:500;transition:transform .3s ease}
-details[open] summary::after{transform:rotate(45deg)}
-details p{color:var(--soft);margin-top:10px;max-width:68ch}
+.faq h2{font-size:clamp(32px,4.4vw,56px);margin-bottom:28px}
+.faq details{padding-block:18px;background:transparent}
+.faq details+details{border-top:2px solid var(--panel)}
+.faq summary{cursor:pointer;font:700 clamp(19px,1.8vw,23px) var(--display);letter-spacing:-0.02em;list-style:none;display:flex;justify-content:space-between;gap:16px;align-items:center;min-height:44px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--up);font-size:28px;font-weight:500;transition:transform .3s ease}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{color:var(--soft);margin-top:10px;max-width:68ch}
 
 /* support */
 .support{margin-block:140px 0;padding-block:64px;background:var(--panel);display:flex;flex-direction:column;gap:18px}
-.support h2{font-size:clamp(36px,4.6vw,64px)}
+.support h2{font-size:clamp(28px,3vw,40px)}
 .support p{color:var(--soft);max-width:62ch}
 .addr{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .addr code{font:15px var(--text);background:var(--raised);padding:14px 16px;overflow-wrap:anywhere;min-width:0;flex:1 1 320px;user-select:all}
 
-/* closing + footer */
-.close{padding-block:160px 120px;display:flex;flex-direction:column;gap:28px;align-items:flex-start}
-.close h2{font-size:clamp(56px,13vw,220px);letter-spacing:-0.05em;line-height:.85}
+/* footer */
 footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size:13.5px;color:var(--soft);display:flex;flex-direction:column;gap:10px;max-width:100ch}
 
-.nogl{position:absolute;inset:0;background:var(--bg)}
-
 /* phone */
-.only-phone{display:none}
 @media (max-width:900px){
   .top nav{display:none}
   .menu{display:block}
@@ -195,26 +201,29 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
   .row,.install{grid-template-columns:minmax(0,1fr)}
   .row.flip .text{order:0}
   .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  #story{height:440vh}
-  .hero{grid-template-columns:minmax(0,1fr);padding-inline:var(--gut);padding-top:calc(100px + env(safe-area-inset-top,0px))}
+  #story{height:280vh}
+  .hero{grid-template-columns:minmax(0,1fr);padding-inline:var(--gut);padding-top:calc(84px + env(safe-area-inset-top,0px))}
   .hero-copy.gut{padding-inline:0}
-  .hc-row{grid-template-columns:minmax(0,1fr) auto 58px 52px;gap:8px;font-size:14px;padding:8px}
+  .hc-row{grid-template-columns:minmax(0,1fr) auto 58px 64px;gap:8px;font-size:14px;padding:8px}
   #story .stage{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
   .story-side{padding:20px var(--gut) 0;gap:12px}
   .story-side h2{font-size:clamp(28px,7vw,40px)}
-  .rail li{display:none;padding-block:4px}
-  .rail li.on{display:block}
+  .rail li{padding-block:4px}
+  .rail li b{font-size:16px}
   .rail li::after{display:none}
-  .story-foot{display:none}
+  .story-foot{font-size:12px}
   .toast{right:12px;bottom:16px;width:calc(100% - 24px)}
 }
 @media (max-width:560px){
   .safety,.grid{grid-template-columns:minmax(0,1fr)}
   .feat{gap:96px}
-  .only-phone{display:block}
+  .long{display:none}.short{display:inline}
 }
+@media (max-width:420px){.top{gap:12px}.top .dl{display:none}}
+@media (max-width:360px){.hero-card{padding:14px}.hc-row{grid-template-columns:minmax(0,1fr) auto 46px 58px;gap:6px;font-size:13px;padding:8px 6px}.hc-row .r{font-size:11px;padding:2px 7px}}
 @media (prefers-reduced-motion:reduce){
-  .fade,.btn,summary::after,.rail li,.rail li::before,.rail li span,.toast{transition:none}
+  .fade,.btn,.faq summary::after,.rail li,.rail li::before,.rail li span,.toast{transition:none}
+  .rail li{color:var(--ink)}.rail li span{max-height:none;opacity:1;margin-top:6px}#story{height:auto}#story .stage{position:static;height:auto;min-height:100svh}
 }
 </style>
 </head>
@@ -226,8 +235,8 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
   <nav aria-label="Sections">
     <a href="#features">Features</a>
     <a href="#safety">Safety</a>
-    <a href="#install">Install</a>
     <a href="#questions">Questions</a>
+    <a href="#install">Install</a>
     <a href="https://github.com/movementall/bagscope" target="_blank" rel="noopener">Source code</a>
   </nav>
   <details class="menu">
@@ -235,8 +244,8 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
     <div class="menu-list">
       <a href="#features">Features</a>
       <a href="#safety">Safety</a>
-      <a href="#install">Install</a>
       <a href="#questions">Questions</a>
+      <a href="#install">Install</a>
       <a href="https://github.com/movementall/bagscope" target="_blank" rel="noopener">Source code</a>
     </div>
   </details>
@@ -247,25 +256,26 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
   <!-- Hero -->
   <section id="hero" class="hero">
       <div class="hero-copy gut">
-        <h1 id="title"><span class="ln">Every wallet.</span><span class="ln">One real total.</span></h1>
-        <p class="lede">A free Windows app for Solana meme coin holders. It adds up the Phantom wallets you choose from on-chain balances, fills in what you paid, and flags common rug-pull warning signs. View-only: it has no feature that can send, swap or sign, so it cannot move your funds.</p>
+        <h1 id="title"><span class="ln">Every wallet.</span> <span class="ln">One real total.</span></h1>
+        <p class="lede">A free Windows app for Solana meme coin holders. Add the Phantom wallets you choose and see one total, read from the Solana network. It fills in what you paid and flags rug-pull warning signs. View-only: it cannot send, swap or sign a transaction.</p>
         <div class="cta">
           <a class="btn dl" id="download" href="#install">Download for Windows</a>
-          <a class="btn ghost" href="https://github.com/movementall/bagscope" target="_blank" rel="noopener">Read the source code</a>
+          <a class="btn ghost" href="https://github.com/movementall/bagscope" target="_blank" rel="noopener"><span class="long">Read the source code</span><span class="short">Source code</span></a>
         </div>
+        <noscript><p class="status">Downloading needs JavaScript. Without it, get the files from the <a href="https://github.com/movementall/bagscope">source repository on GitHub</a>.</p></noscript>
         <p class="status" id="dlstatus" role="status"></p>
-        <p class="meta">Windows 10 and 11 · 107 MB · free and open source · no account</p>
+        <p class="meta">Version 0.2.0 · Windows 10 and 11 · 107 MB · free and open source · view-only · no account</p>
       </div>
       <div class="hero-card" id="heroCard" role="group" aria-label="Example of the Bagscope dashboard, with made-up numbers">
-        <div class="hc-top"><span>Total · 3 wallets</span><span class="hc-tools"><span class="hc-ex">Example</span><button class="hc-pause" id="hcPause" type="button" aria-pressed="false">Pause</button></span></div>
+        <div class="hc-top"><span>Total · 3 wallets</span><span class="hc-tools"><span class="hc-ex">Example</span><button class="hc-pause" id="hcPause" type="button">Pause</button></span></div>
         <div class="hc-total" id="hcTotal">$53,593.65</div>
         <div class="hc-change" id="hcChange">+$1,284.20 (+2.46%) today</div>
-        <canvas id="mini" height="150"></canvas>
+        <canvas id="mini" height="150" aria-hidden="true"></canvas>
         <div class="hc-rows">
           <div class="hc-row"><b>SOL</b><span class="v">$30,679.68</span><span class="c up">+2.1%</span><span class="r low">Low</span></div>
           <div class="hc-row"><b>WIF</b><span class="v">$8,412.30</span><span class="c dn">−4.8%</span><span class="r low">Low</span></div>
           <div class="hc-row"><b>BONK</b><span class="v">$5,960.11</span><span class="c up">+0.6%</span><span class="r low">Low</span></div>
-          <div class="hc-row"><b>POPCAT</b><span class="v">$3,904.75</span><span class="c up">+11.3%</span><span class="r mid">Watch</span></div>
+          <div class="hc-row"><b>POPCAT</b><span class="v">$3,904.75</span><span class="c up">+11.3%</span><span class="r mid">Medium</span></div>
           <div class="hc-row"><b>PNUT</b><span class="v">$1,754.41</span><span class="c dn">−7.2%</span><span class="r high">High</span></div>
         </div>
         <div class="hc-foot" id="hcFoot">Updated just now</div>
@@ -275,9 +285,9 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
   <!-- Safety -->
   <section class="safety gut" id="safety" data-reveal>
     <h2>Looks at your bags. Never touches them.</h2>
-    <div><b>View-only</b><span>Reads public addresses. There is no feature that sends a transaction.</span></div>
+    <div><b>View-only</b><span>Reads public addresses. It has no feature that can send, swap or sign a transaction, so it cannot move your funds.</span></div>
     <div><b>No seed phrase, ever</b><span>There is nowhere to type one. If something asks, it is not Bagscope.</span></div>
-    <div><b>Stays on your PC</b><span>Wallets, settings and history are stored locally. No account and no tracking by Bagscope. Balances and prices are fetched from public data services.</span></div>
+    <div><b>Stays on your PC</b><span>Wallets, settings and history are stored locally. No account and no tracking by Bagscope. Balances and prices are fetched from public data services. <a href="privacy/">Privacy policy</a></span></div>
     <div><b>Open source</b><span>Every line is public, so you do not have to take anyone's word for it.</span></div>
   </section>
 
@@ -295,9 +305,9 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
         <p class="story-foot">Example coin. In the app every candle comes from Jupiter.</p>
       </div>
       <div class="story-chart">
-        <canvas id="chart" aria-label="A candlestick chart drawing itself as you scroll, with Bagscope's features marked on it"></canvas>
+        <canvas id="chart" role="img" aria-label="A candlestick chart drawing itself as you scroll, with Bagscope's features marked on it"></canvas>
         <div class="toast" id="toast" role="status" aria-live="polite">
-          <div class="toast-app"><span class="mark">B</span>Bagscope · now</div>
+          <div class="toast-app"><span class="mark" aria-hidden="true">B</span>Bagscope · now</div>
           <b>POPCAT passed $5M market cap</b>
           <span>Your alert "market cap above 5m" just fired.</span>
         </div>
@@ -309,7 +319,7 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
   <section class="feat gut" id="features">
     <div class="feat-head" data-reveal>
       <h2>For people with more coins than they can keep in their head</h2>
-      <p>Wallet apps show one account at a time, and a coin with almost no liquidity can show a value nobody could actually sell for. Bagscope answers the questions that matter.</p>
+      <p>Wallet apps show one account at a time. A coin with almost no liquidity can show a value nobody could actually sell for. Bagscope puts every wallet in one total and leaves out value that could not be sold. The screenshots below are the real app showing a real wallet with live on-chain data.</p>
     </div>
 
     <div class="row" data-reveal>
@@ -318,12 +328,12 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
         <h3>A total built from on-chain data</h3>
         <p>Balances come straight from the Solana network for every wallet you add, priced from the pool with the deepest liquidity.</p>
         <ul>
-          <li>Coins with no real price, or more value than could ever be sold, are left out, and each says why</li>
+          <li>Coins with no real price, or a value nobody could sell for, are left out. Each one says why</li>
           <li>24h, 7d, 30d, 6-month and 1-year performance</li>
           <li>If data fails to load, it says so. It never fills a gap with a guess</li>
         </ul>
       </div>
-      <figure class="shot"><img decoding="async" src="shots/dashboard.png" width="1320" height="860" alt="Bagscope dashboard: total balance across wallets, performance tiles, a portfolio chart and the allocation bar"></figure>
+      <figure class="shot"><picture><source media="(max-width:560px)" srcset="shots/m-dashboard.png"><img decoding="async" src="shots/dashboard.png" width="1320" height="860" alt="Bagscope dashboard: total balance across wallets, performance tiles, a portfolio chart and the allocation bar"></picture></figure>
     </div>
 
     <div class="row flip" data-reveal>
@@ -337,79 +347,57 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
           <li>Whether the developer wallet is holding, reduced or sold</li>
         </ul>
       </div>
-      <figure class="shot"><img decoding="async" src="shots/risk.png" width="1320" height="860" alt="Risk tab showing a Low risk score with each factor listed"></figure>
+      <figure class="shot"><picture><source media="(max-width:560px)" srcset="shots/m-risk.png"><img decoding="async" src="shots/risk.png" width="1320" height="860" alt="Risk tab showing a Low risk score with each factor listed"></picture></figure>
     </div>
 
     <div class="row" data-reveal>
       <div class="text">
         <span class="q">Is this the real one?</span>
-        <h3>Warns about coins that share a name</h3>
-        <p>When two coins in your wallets share a ticker, Bagscope warns you and compares them side by side by liquidity and risk.</p>
+        <h3>Tells apart coins that share a ticker</h3>
+        <p>When two coins in your wallets share a ticker, Bagscope warns you and puts them side by side: liquidity and risk for each.</p>
       </div>
-      <figure class="shot"><img decoding="async" src="shots/samename.png" width="1320" height="860" alt="Dialog comparing three different tokens that all use the same ticker"></figure>
+      <figure class="shot"><picture><source media="(max-width:560px)" srcset="shots/m-samename.png"><img decoding="async" src="shots/samename.png" width="1320" height="860" alt="Dialog comparing three different tokens that all use the same ticker"></picture></figure>
     </div>
 
     <div class="row flip" data-reveal>
       <div class="text">
         <span class="q">Am I actually doing well?</span>
-        <h3>Your bags against just holding something else</h3>
-        <p>Your holdings next to SOL, Bitcoin, Ethereum, a meme coin index, and the S&amp;P 500, Nasdaq 100 and gold through tokenised funds.</p>
+        <h3>Your bags next to SOL, Bitcoin and the S&amp;P 500</h3>
+        <p>Also Ethereum, a meme coin index, the Nasdaq 100 and gold. The stock and gold lines follow tokenised funds on Solana.</p>
         <ul>
-          <li>Entries fill themselves in from your swap history; tokens you received are valued at the market price of that day and marked as an estimate</li>
+          <li>Entries fill in from your swap history. Tokens you received are valued at that day's market price and marked as an estimate</li>
           <li>Average entry, realized and unrealized profit per coin</li>
         </ul>
       </div>
-      <figure class="shot"><img decoding="async" src="shots/benchmarks.png" width="1320" height="860" alt="Performance chart comparing your bags with SOL, Bitcoin, a meme index and the S&amp;P 500"></figure>
+      <figure class="shot"><picture><source media="(max-width:560px)" srcset="shots/m-benchmarks.png"><img decoding="async" src="shots/benchmarks.png" width="1320" height="860" alt="Performance chart comparing your bags with SOL, Bitcoin, a meme index and the S&amp;P 500"></picture></figure>
     </div>
 
     <div class="row" data-reveal>
       <div class="text">
         <span class="q">Tell me when it moves</span>
         <h3>Alerts as Windows notifications</h3>
-        <p>Type amounts the way you say them: 5m, 250k, 1.2b.</p>
+        <p>Type amounts the way you say them: 5m, 250k, 1.2b. The notification comes on the next price check after a level is crossed.</p>
         <ul>
           <li>Price or market cap above or below</li>
           <li>Whale trades over a size you choose</li>
           <li>Liquidity being pulled from the main pool</li>
         </ul>
       </div>
-      <figure class="shot"><img decoding="async" src="shots/alerts.png" width="1320" height="860" alt="Alerts page with a market cap alert being set using the shorthand 5m"></figure>
+      <figure class="shot"><picture><source media="(max-width:560px)" srcset="shots/m-alerts.png"><img decoding="async" src="shots/alerts.png" width="1320" height="860" alt="Alerts page with a market cap alert being set using the shorthand 5m"></picture></figure>
     </div>
-    <p class="caption" data-reveal>The screenshots are the real app showing a real wallet with live on-chain data.</p>
   </section>
 
   <!-- Also inside -->
   <section class="more gut" data-reveal>
     <h2>Also inside</h2>
     <div class="grid">
-      <div><b>Connect from your phone</b><span>Scan a QR code and approve in the Phantom mobile app.</span></div>
+      <div><b>Connect from your phone</b><span>Scan a QR code and approve in the Phantom app on your phone. Phone and PC need the same Wi-Fi.</span></div>
       <div><b>Watch any address</b><span>Track a cold wallet without connecting anything.</span></div>
       <div><b>Degen mode</b><span>Hide dust and rank coins by how hard they moved today.</span></div>
       <div><b>Search everything</b><span>Ctrl+K finds any coin by name, ticker or mint address.</span></div>
       <div><b>Mini view and tray</b><span>A small always-on-top total, and alerts that keep running in the tray.</span></div>
       <div><b>PnL cards</b><span>A shareable image of your result, dollar amounts optional.</span></div>
-      <div><b>Grok analysis</b><span>A read on narrative and sentiment per coin, with your own xAI key.</span></div>
-      <div><b>Posts from X</b><span>Recent posts per coin and influencer alerts, with your own X API access.</span></div>
-      <div><b>Your colours</b><span>Dark, light and any accent colour you like.</span></div>
     </div>
-  </section>
-
-  <!-- Install -->
-  <section class="install gut" id="install">
-    <div data-reveal>
-      <h2>Install it in a minute</h2>
-      <ol class="steps">
-        <li><div><b>Download and run the installer</b><span>Choose the folder and whether you want a desktop shortcut.</span></div></li>
-        <li><div><b>Add a wallet</b><span>Connect Phantom on this PC, scan a QR code with your phone, or paste an address to watch.</span></div></li>
-        <li><div><b>Approve and sign a short message</b><span>That proves the address is yours. It is not a transaction and costs nothing.</span></div></li>
-      </ol>
-      <div class="cta" style="margin-top:32px">
-        <a class="btn dl" href="#install">Download for Windows</a>
-      </div>
-      <p class="status" id="dlstatus2" role="status"></p>
-      <p class="note">Windows may show “Windows protected your PC” because the installer is new and not yet signed. Choose “More info”, then “Run anyway”. On PCs with Smart App Control switched on, Windows may refuse unsigned apps altogether.</p>
-    </div>
-    <figure class="shot" data-reveal><img decoding="async" src="shots/welcome.png" width="1320" height="860" alt="First-run screen offering three ways to add a wallet"></figure>
   </section>
 
   <!-- Questions -->
@@ -421,6 +409,27 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
     <details><summary>How accurate is the performance history?</summary><p>Balances are read directly from the Solana network. Prices are market prices from Jupiter and can differ from what you would get when selling. Charts for dates before you installed the app value today's holdings at past prices, and the app labels them as an estimate. Profit and loss per coin comes from your own swaps.</p></details>
     <details><summary>Is there a Mac or Linux version?</summary><p>Not yet. Bagscope runs on Windows 10 and 11.</p></details>
     <details><summary>Is it really free?</summary><p>Yes. No ads, no subscription, no token. If it is useful to you, there is an optional tip address below.</p></details>
+    <details><summary>Does it work with X or Grok?</summary><p>Yes, with your own access. Add your X API access or your xAI key under Settings, and Bagscope shows recent posts per coin and a Grok read on narrative and sentiment. Both are optional.</p></details>
+  </section>
+
+  <!-- Install -->
+  <section class="install gut" id="install">
+    <div data-reveal>
+      <h2>Install in three steps</h2>
+      <ol class="steps">
+        <li><div><b>Download, open the zip and run Install Bagscope</b><span>Choose the folder and whether you want a desktop shortcut.</span></div></li>
+        <li><div><b>Add a wallet</b><span>Connect Phantom on this PC, scan a QR code with your phone, or paste an address to watch.</span></div></li>
+        <li><div><b>Approve and sign a short message</b><span>That proves the address is yours. It is not a transaction and costs nothing.</span></div></li>
+      </ol>
+      <div class="cta" style="margin-top:32px">
+        <a class="btn dl" href="#install">Download for Windows</a>
+      </div>
+      <p class="meta">Version 0.2.0 · Windows 10 and 11 · 107 MB · free and open source · view-only · no account</p>
+      <p class="status" id="dlstatus2" role="status"></p>
+      <p class="note">Windows may show “Windows protected your PC” because the installer is new and not yet signed. Choose “More info”, then “Run anyway”. On PCs with Smart App Control switched on, Windows may refuse unsigned apps altogether.</p>
+      <p class="meta">SHA-256 of Bagscope.zip: <code class="sha">6468BB078B2FDFCABA129142BBF28A6407E9039BE650D7361FD7A7FC7292DD76</code> · <a href="https://github.com/movementall/bagscope" target="_blank" rel="noopener">Source code on GitHub</a></p>
+    </div>
+    <figure class="shot" data-reveal><picture><source media="(max-width:560px)" srcset="shots/m-welcome.png"><img decoding="async" src="shots/welcome.png" width="1320" height="860" alt="First-run screen offering three ways to add a wallet"></picture></figure>
   </section>
 
   <!-- Support -->
@@ -438,17 +447,18 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
 
 <footer class="gut">
   <nav class="legal" aria-label="Legal">
-    <a href="legal/">Legal notice</a>
+    <a href="legal/">Legal notice and contact</a>
     <a href="privacy/">Privacy policy</a>
     <a href="terms/">Terms of use</a>
     <a href="cookies/">Cookie policy</a>
     <a href="donations/">Donations and refunds</a>
     <a href="accessibility/">Accessibility</a>
     <a href="assets/LICENSES.txt">Licences</a>
+    <a href="https://github.com/movementall/bagscope/issues" target="_blank" rel="noopener">Report a problem</a>
   </nav>
   <span>Bagscope is free software released under the MIT licence, provided as is and without warranty. It includes open-source libraries and fonts under their own licences; the full notices ship with the app under Settings, About and legal.</span>
-  <span>Data: balances and transactions from the Solana network; prices and charts from Jupiter; fallback data from DEX Screener and GeckoTerminal; risk data from RugCheck; the S&amp;P 500, Nasdaq 100 and gold benchmarks follow tokenised funds on Solana. Token names belong to their projects and are shown only to identify them.</span>
-  <span>Bagscope is an independent project. It is not affiliated with or endorsed by Phantom, Solana, Jupiter, DEX Screener, GeckoTerminal, RugCheck, X or xAI.</span>
+  <span>Data: balances and transactions from the Solana network; prices and charts from Jupiter; fallback data from DEX Screener and GeckoTerminal; risk data from RugCheck and Jupiter; the S&amp;P 500, Nasdaq 100 and gold benchmarks follow tokenised funds on Solana. Token names belong to their projects and are shown only to identify them.</span>
+  <span>Bagscope is an independent project. It is not affiliated with or endorsed by Phantom, Solana, Jupiter, DEX Screener, GeckoTerminal, CoinGecko, RugCheck, X, xAI, Microsoft or GitHub.</span>
   <span>Nothing on this page or in the app is financial advice. Risk scores are tools for your own judgement, and a low score is not a guarantee. Crypto assets can lose all their value.</span>
 </footer>
 
@@ -472,43 +482,50 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
   // A Download button fetches them, joins them into one file and hands it to the browser to save.
   const PARTS = 14, SIZE = 112152181, PART_DIR = 'dl/v020/';
   const statusEls = [document.getElementById('dlstatus'), document.getElementById('dlstatus2')];
-  const say = (t) => statusEls.forEach((s) => { if (s) s.textContent = t; });
+  // Status goes to the one status line in the same section as the button that was pressed.
+  const say = (btn, t) => { const s = btn.closest('section')?.querySelector('.status') || statusEls[0]; if (s) s.textContent = t; };
+  const SMARTSCREEN = 'If Windows shows "Windows protected your PC", choose More info, then Run anyway.';
   let dlBusy = false;
   const dlButtons = [...document.querySelectorAll('.dl')];
-  if (phoneLike) dlButtons.forEach((b) => { b.textContent = b.classList.contains('small') ? 'Get link' : 'Copy link for my PC'; });
+  if (phoneLike) dlButtons.forEach((b) => { b.textContent = b.classList.contains('small') ? 'Copy link' : 'Copy link for my PC'; });
   async function download(btn) {
     if (dlBusy) return;
     dlBusy = true;
-    const label = btn.textContent;
+    const label = btn.textContent, total = Math.round(SIZE / 1048576);
+    say(btn, 'Starting the download. ' + SMARTSCREEN);
     try {
-      const parts = []; let got = 0;
+      const parts = []; let got = 0, tenth = -1;
       for (let i = 1; i <= PARTS; i++) {
         const res = await fetch(PART_DIR + 'p' + i + '.bin');
         if (!res.ok) throw new Error('part ' + i + ' answered ' + res.status);
         const buf = await res.arrayBuffer();
         parts.push(buf); got += buf.byteLength;
-        btn.textContent = 'Downloading ' + Math.round(got / SIZE * 100) + '%';
-        say(Math.round(got / 1048576) + ' of ' + Math.round(SIZE / 1048576) + ' MB');
+        const pct = got / SIZE * 100;
+        btn.textContent = 'Downloading ' + Math.round(pct) + '%';
+        if (Math.floor(pct / 10) !== tenth) {
+          tenth = Math.floor(pct / 10);
+          say(btn, Math.round(got / 1048576) + ' of ' + total + ' MB. When it finishes, open Bagscope.zip and run Install Bagscope. ' + SMARTSCREEN);
+        }
       }
       if (got !== SIZE) throw new Error('the file arrived incomplete');
       const url = URL.createObjectURL(new Blob(parts, { type: 'application/zip' }));
       const a = document.createElement('a'); a.href = url; a.download = 'Bagscope.zip';
       document.body.append(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 120000);
-      say('Bagscope.zip is in your Downloads folder. Open it and run "Install Bagscope".');
+      say(btn, 'Bagscope.zip is in your Downloads folder. Open it and run Install Bagscope. ' + SMARTSCREEN);
     } catch (err) {
-      say('The download could not finish (' + (err && err.message ? err.message : 'network error') + '). Check your connection and press the button again.');
+      say(btn, 'The download could not finish (' + (err && err.message ? err.message : 'network error') + '). Check your connection and press the button again.');
     } finally { btn.textContent = label; dlBusy = false; }
   }
-  async function copyLink() {
+  async function copyLink(btn) {
     const link = 'https://bagscope.org';
     try {
       if (navigator.share) { await navigator.share({ title: 'Bagscope', text: 'Bagscope for Windows', url: link }); return; }
       await navigator.clipboard.writeText(link);
-      say('Link copied. Open bagscope.org on your Windows PC to download.');
-    } catch (e) { say('Open bagscope.org on your Windows PC to download.'); }
+      say(btn, 'Link copied. Open bagscope.org on your Windows PC to download.');
+    } catch (e) { say(btn, 'Open bagscope.org on your Windows PC to download.'); }
   }
-  dlButtons.forEach((b) => b.addEventListener('click', (e) => { e.preventDefault(); phoneLike ? copyLink() : download(b); }));
+  dlButtons.forEach((b) => b.addEventListener('click', (e) => { e.preventDefault(); phoneLike ? copyLink(b) : download(b); }));
 
   document.getElementById('copy').addEventListener('click', async () => {
     const status = document.getElementById('status');
@@ -523,7 +540,7 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
   /* ---------- smooth scroll (Lenis) sharing GSAP's clock ---------- */
   let lenis = null;
   if (!reduce && hasGsap && window.Lenis) {
-    lenis = new Lenis({ lerp: 0.09 });
+    lenis = new Lenis({ lerp: 0.12 });
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add((t) => lenis.raf(t * 1000));
     gsap.ticker.lagSmoothing(0);
@@ -593,7 +610,6 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
       changeEl.textContent = (d >= 0 ? '+' : '−') + money(Math.abs(d)) + ' (' + (d >= 0 ? '+' : '−') + Math.abs(pct).toFixed(2) + '%) today';
       changeEl.style.color = d >= 0 ? 'var(--up)' : 'var(--down)';
     };
-    const rows = [...document.querySelectorAll('.hc-row')];
     const TOTAL = 53593.65;
     let seed = 5; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
     const bars = []; let price = 50;
@@ -638,21 +654,21 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
     pauseBtn.addEventListener('click', () => {
       paused = !paused;
       pauseBtn.textContent = paused ? 'Play' : 'Pause';
-      pauseBtn.setAttribute('aria-pressed', String(paused));
     });
-    // a new candle every 1.4s; the total and one coin row move with it
+    // after the entrance settles, a new candle every 3.5s; the total moves with it
     let shown = TOTAL, secs = 0;
-    setInterval(() => {
-      if (!visible || paused) return;
-      push();
-      const delta = (price - bars[bars.length - 2].c) * 9;
-      const from = shown; shown = Math.max(TOTAL * 0.97, Math.min(TOTAL * 1.03, shown + delta));
-      if (hasGsap) { const o = { v: from }; gsap.to(o, { v: shown, duration: 0.8, ease: 'power2.out', onUpdate: () => setTotal(o.v) }); }
-      else setTotal(shown);
-      const r = rows[Math.floor(rnd() * rows.length)]; r.classList.remove('flash'); void r.offsetWidth; r.classList.add('flash');
-      secs = 0; footEl.textContent = 'Updated just now';
-    }, 1400);
-    setInterval(() => { secs++; if (secs > 1) footEl.textContent = 'Updated ' + secs + 's ago'; }, 1000);
+    setTimeout(() => {
+      setInterval(() => {
+        if (!visible || paused) return;
+        push();
+        const delta = (price - bars[bars.length - 2].c) * 9;
+        const from = shown; shown = Math.max(TOTAL * 0.97, Math.min(TOTAL * 1.03, shown + delta));
+        if (hasGsap) { const o = { v: from }; gsap.to(o, { v: shown, duration: 0.8, ease: 'power2.out', onUpdate: () => setTotal(o.v) }); }
+        else setTotal(shown);
+        secs = 0; footEl.textContent = 'Updated just now';
+      }, 3500);
+    }, 2500);
+    setInterval(() => { secs += 5; footEl.textContent = secs < 5 ? 'Updated just now' : 'Updated ' + secs + 's ago'; }, 5000);
     if (hasGsap) {
       const o = { v: 0 };
       gsap.to(o, { v: TOTAL, duration: 1.8, ease: 'expo.out', delay: 0.5, onUpdate: () => { totalEl.textContent = money(o.v); }, onComplete: () => setTotal(TOTAL) });
@@ -667,25 +683,30 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
     const ctx = canvas.getContext('2d');
     const steps = [...document.querySelectorAll('#rail li')];
     const toast = document.getElementById('toast');
-    const n = 84, marks = { entry: 12, alert: 38, pnl: 47, rug: 58 };
+    const n = 84, marks = { entry: 14, alert: 34, pnl: 50, rug: 64 };
     let seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
     const C = []; let p0 = 4.1;
     for (let i = 0; i < n; i++) {
       let drift = 0.05;
-      if (i > 18 && i < 28) drift = -0.1; if (i >= 28 && i < 48) drift = 0.42; if (i >= 52 && i < 66) drift = -0.5; if (i >= 66) drift = 0.05;
+      if (i > 18 && i < 28) drift = -0.1; if (i >= 28 && i < 48) drift = 0.42; if (i >= 54 && i < 70) drift = -0.5; if (i >= 70) drift = 0.05;
       const o = p0, c = Math.max(1.2, o + drift + (rnd() - 0.5) * 0.9);
-      C.push({ o, c, h: Math.max(o, c) + rnd() * 0.5, l: Math.max(0.8, Math.min(o, c) - rnd() * 0.5), v: 0.3 + rnd() * 0.7 + (i >= 28 && i < 48 ? 0.6 : 0) + (i >= 52 && i < 66 ? 0.9 : 0) });
+      C.push({ o, c, h: Math.max(o, c) + rnd() * 0.5, l: Math.max(0.8, Math.min(o, c) - rnd() * 0.5), v: 0.3 + rnd() * 0.7 + (i >= 28 && i < 48 ? 0.6 : 0) + (i >= 54 && i < 70 ? 0.9 : 0) });
       p0 = c;
     }
     const alertLevel = 9.4;
     const UP = '#3ee39a', DOWN = '#ff5f6d', GOLD = '#ffc857';
-    let W = 0, H = 0, dpr = 1;
-    const st = track('story');
-    sizer(canvas, (w, h) => { dpr = Math.min(devicePixelRatio, 2); W = w; H = h; canvas.width = w * dpr; canvas.height = h * dpr; });
     const fmt = (v) => '$' + (v / 1000).toFixed(4);
+    let W = 0, H = 0, dpr = 1, pad = 24, right = 110;
+    const st = track('story');
+    // With reduced motion there is no per-frame loop: the finished chart is drawn once here and again on resize.
+    sizer(canvas, (w, h) => { dpr = Math.min(devicePixelRatio, 2); W = w; H = h; canvas.width = w * dpr; canvas.height = h * dpr; if (reduce) draw(1, 0); });
+    if (reduce && document.fonts) document.fonts.ready.then(() => draw(1, 0));
     function pill(x, yy, text, bg, fg, alignRight) {
       ctx.font = '600 13px Geist, system-ui, sans-serif';
-      const w = ctx.measureText(text).width + 18, h = 26, x0 = alignRight ? x - w : x;
+      const w = ctx.measureText(text).width + 18, h = 26;
+      let x0 = alignRight ? x - w : x;
+      // pills that start on the chart stay inside it; the price label lives in the right gutter and is left alone
+      if (x0 < W - right) x0 = clamp(x0, pad, Math.max(pad, W - right - w));
       ctx.fillStyle = bg; ctx.beginPath();
       if (ctx.roundRect) ctx.roundRect(x0, yy - h / 2, w, h, 13); else ctx.rect(x0, yy - h / 2, w, h);
       ctx.fill(); ctx.fillStyle = fg; ctx.textBaseline = 'middle'; ctx.fillText(text, x0 + 9, yy + 1);
@@ -694,9 +715,9 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
       if (!W) return;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, W, H);
-      const pad = narrow() ? 12 : 24, right = narrow() ? 92 : 110;
+      pad = narrow() ? 12 : 24; right = narrow() ? 92 : 110;
       const top = H * 0.2, bottom = H * 0.78, volTop = H * 0.84, volBottom = H * 0.95;
-      const shown = 8 + clamp(p * 1.08, 0, 1) * (n - 8);
+      const shown = 8 + clamp(p / 0.93, 0, 1) * (n - 8);
       const full = Math.floor(shown), frac = shown - full, last = Math.max(0, Math.ceil(shown) - 1);
       const visible = narrow() ? 30 : n;
       const start = Math.max(0, Math.min(n - visible, Math.ceil(shown) - visible + 3));
@@ -723,7 +744,8 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
       const crossed = shown > marks.alert;
       ctx.setLineDash([8, 7]); ctx.strokeStyle = crossed ? GOLD : '#3d3626'; ctx.lineWidth = crossed ? 2 : 1;
       ctx.beginPath(); ctx.moveTo(pad, y(alertLevel)); ctx.lineTo(W - right + 8, y(alertLevel)); ctx.stroke(); ctx.setLineDash([]);
-      pill(pad + 4, y(alertLevel) - 18, crossed ? 'Alert fired · mcap 5M' : 'Your alert · mcap 5M', crossed ? GOLD : '#1a1f2a', crossed ? '#1d1400' : GOLD);
+      // on phones the alert pill sits at the right end of the line, clear of the rug ring
+      pill(narrow() ? W - right + 8 : pad + 4, y(alertLevel) - 18, crossed ? 'Alert fired · mcap 5M' : 'Your alert · mcap 5M', crossed ? GOLD : '#1a1f2a', crossed ? '#1d1400' : GOLD, narrow());
 
       // closing-price line, faint, under the candles
       ctx.strokeStyle = 'rgba(238,243,241,.10)'; ctx.lineWidth = 2; ctx.beginPath();
@@ -754,7 +776,7 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
         ctx.strokeStyle = 'rgba(62,227,154,.45)'; ctx.setLineDash([2, 6]); ctx.lineWidth = 1.5;
         ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(W - right + 8, ey); ctx.stroke(); ctx.setLineDash([]);
         if (onScreen) { ctx.fillStyle = UP; ctx.beginPath(); ctx.arc(ex, ey, 6, 0, Math.PI * 2); ctx.fill(); }
-        pill(ex + (onScreen ? 12 : 4), ey + 22, 'Entry · ' + fmt(C[marks.entry].c), '#0f2a1d', UP);
+        pill(ex + (onScreen ? 12 : 4), Math.min(ey + 22, volTop - 20), 'Entry · ' + fmt(C[marks.entry].c), '#0f2a1d', UP);
         // the gain: a soft shaded area from the entry price up to the peak, fading in as the move happens
         if (shown > marks.pnl + 1) {
           const x0 = ex, x1 = (marks.pnl >= start ? X(marks.pnl) : pad) + cw / 2, peak = y(C[marks.pnl].h);
@@ -777,7 +799,10 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
         const rx = X(marks.rug), ry = y((C[marks.rug].h + C[marks.rug].l) / 2);
         ctx.strokeStyle = DOWN; ctx.lineWidth = 2;
         ctx.globalAlpha = 1 - pulse * 0.6; ctx.beginPath(); ctx.arc(rx, ry, 16 + pulse * 14, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1;
-        pill(rx + 30, ry - 30, 'Rug check · dev sold 40%', DOWN, '#2a0508');
+        const rugText = 'Rug check · dev sold 40%';
+        ctx.font = '600 13px Geist, system-ui, sans-serif';
+        const rugFits = rx + 30 + ctx.measureText(rugText).width + 18 <= W - right;
+        pill(rugFits ? rx + 30 : rx - 30, ry - 30, rugText, DOWN, '#2a0508', !rugFits);
       }
 
       // crosshair on the live candle
@@ -791,7 +816,7 @@ footer{padding-block:40px calc(48px + env(safe-area-inset-bottom,0px));font-size
       steps.forEach((li, i) => { li.classList.toggle('on', i === step); li.classList.toggle('done', i < step); });
       toast.classList.toggle('on', crossed && shown < marks.rug + 4);
     }
-    (function loop(t) { requestAnimationFrame(loop); if (st.visible) draw(st.p, t); })(0);
+    if (!reduce) (function loop(t) { requestAnimationFrame(loop); if (st.visible) draw(st.p, t); })(0);
   })();
 
   if (hasGsap) addEventListener('load', () => ScrollTrigger.refresh());

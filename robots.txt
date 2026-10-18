@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /add/
+Disallow: /dl/
+Sitemap: https://bagscope.org/sitemap.xml
