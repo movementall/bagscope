@@ -3,9 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Accessibility of Bagscope, the free view-only Solana portfolio app.">
+<meta name="description" content="How bagscope.org works with a screen reader, a keyboard, zoom and reduced motion, and how to report a problem.">
 <meta name="theme-color" content="#070a10">
+<link rel="canonical" href="https://bagscope.org/accessibility/">
 <link rel="icon" href="../icon.png">
+<link rel="apple-touch-icon" href="../icon.png">
 <title>Accessibility · Bagscope</title>
 <link rel="stylesheet" href="../assets/fonts.css">
 <link rel="stylesheet" href="../assets/legal.css">
@@ -18,21 +20,21 @@
 </header>
 <main id="main">
 <h1>Accessibility</h1>
-<p class="updated">Last updated 14 October 2026</p>
-<p>I want bagscope.org to be usable by everyone, including people who use a screen reader, a keyboard only, high zoom or reduced motion.</p>
+<p class="updated">Last updated 18 October 2026</p>
+<p class="summary">I want bagscope.org to be usable by everyone, including people who use a screen reader, a keyboard only, high zoom or reduced motion.</p>
 <h2>What has been done</h2>
 <ul>
   <li>The aim is the WCAG 2.1 level AA guidelines.</li>
   <li>Every text and background colour combination was measured and meets the AA contrast ratio of at least 4.5 to 1. The lowest on the site is 5.5 to 1.</li>
-  <li>Every screenshot has a text description (alt text). Decorative drawings are hidden from screen readers or described in words next to them.</li>
+  <li>Every screenshot has a text description (alt text). Decorative drawings are hidden from screen readers or described in words next to them. On phones a cropped part of each screenshot is shown so the detail stays readable.</li>
   <li>The whole site works with a keyboard, with a visible focus outline, and a "Skip to content" link at the top.</li>
-  <li>If your device is set to reduce motion, animations and smooth scrolling are switched off and everything is shown in its final state.</li>
+  <li>If your device is set to reduce motion, animations and smooth scrolling are switched off. The chart section is shown unpinned with all four steps written out, and the example dashboard stays still.</li>
   <li>The moving example dashboard at the top has a Pause button.</li>
   <li>The page language is set, headings are in a logical order, and the layout reflows to a single column on small screens, with a menu button on phones.</li>
 </ul>
 <h2>Known limitations</h2>
 <ul>
-  <li>The chart that draws itself while you scroll is a picture. The same information is given as text in the list next to it.</li>
+  <li>The chart that draws itself while you scroll is a picture. The same information is given as text in the list beside it (above it on phones).</li>
   <li>Small text inside the app screenshots can be hard to read. The important points are written in the text beside each screenshot.</li>
 </ul>
 <h2>Report a problem</h2>
@@ -40,13 +42,16 @@
 <p>This statement is voluntary. As a free, non-commercial hobby project, bagscope.org is not covered by the European Accessibility Act.</p>
 </main>
 <footer>
-  <nav aria-label="Legal" style="display:contents">
+  <nav class="legal-nav" aria-label="Legal">
+    <a href="../">Back to the home page</a>
     <a href="../legal/">Legal notice</a>
     <a href="../privacy/">Privacy policy</a>
     <a href="../terms/">Terms of use</a>
     <a href="../cookies/">Cookie policy</a>
     <a href="../donations/">Donations and refunds</a>
     <a href="../accessibility/" aria-current="page">Accessibility</a>
+    <a href="../assets/LICENSES.txt">Licences</a>
+    <a href="https://github.com/movementall/bagscope/issues" target="_blank" rel="noopener">Report a problem</a>
   </nav>
 </footer>
 </body>
