@@ -14,12 +14,17 @@ header{display:flex;align-items:center;gap:20px;padding-block:20px;flex-wrap:wra
 main{max-width:780px;margin:0 auto}
 h1,h2,h3{font-family:var(--display);letter-spacing:-0.03em;line-height:1.1;text-wrap:balance}
 h1{font-size:clamp(36px,6vw,56px);margin:40px 0 8px}
-h2{font-size:clamp(23px,2.6vw,28px);margin:44px 0 10px}
+h2{font-size:clamp(23px,2.6vw,28px);margin:44px 0 10px;scroll-margin-top:24px}
 h3{font-size:20px;margin:28px 0 6px}
 p,li{max-width:70ch}
 ul{padding-left:22px}
 li{margin-block:6px}
 .updated{color:var(--soft);font-size:15px}
+.summary{background:var(--panel);border-radius:12px;padding:18px 22px;margin:20px 0 28px;font-size:18px;line-height:1.55;max-width:none}
+.toc{margin:0 0 32px}
+.toc ol{margin:0;padding-left:22px;columns:2;column-gap:32px;font-size:15.5px}
+.toc li{margin-block:4px;break-inside:avoid}
+@media (max-width:560px){.toc ol{columns:1}}
 .box{background:var(--panel);border-radius:12px;padding:18px 22px;margin-block:20px}
 .box p{margin:6px 0}
 table{border-collapse:collapse;width:100%;font-size:15.5px;margin-block:12px}
@@ -27,6 +32,9 @@ th,td{text-align:left;vertical-align:top;padding:10px 12px}
 th{color:var(--soft);font-weight:500}
 tbody tr:nth-child(odd){background:var(--panel)}
 .table{overflow-x:auto}
-footer{max-width:780px;margin:56px auto 0;display:flex;flex-wrap:wrap;gap:8px 20px;font-size:15px}
+.table:focus-visible{outline:2px solid var(--up);outline-offset:3px}
+footer{max-width:780px;margin:56px auto 0}
+.legal-nav{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:15px}
 footer a{color:var(--ink)}
 footer a[aria-current]{color:var(--up)}
+[hidden]{display:none!important}
