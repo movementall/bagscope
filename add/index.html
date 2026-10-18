@@ -7,6 +7,7 @@
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#070a10">
 <link rel="icon" href="../icon.png">
+<link rel="apple-touch-icon" href="../icon.png">
 <title>Add wallets · Bagscope</title>
 <link rel="stylesheet" href="../assets/fonts.css">
 <link rel="stylesheet" href="../assets/legal.css">
@@ -14,9 +15,11 @@
 .list{display:flex;flex-direction:column;gap:6px;margin-block:18px}
 .w{display:flex;align-items:center;gap:12px;background:var(--panel);border-radius:10px;padding:12px 16px;min-width:0}
 .dot{width:10px;height:10px;border-radius:50%;flex:none}
-.w b{display:block}
+.w b{display:block;overflow-wrap:anywhere}
 .addr{font:13px ui-monospace,Consolas,monospace;color:var(--soft);overflow-wrap:anywhere}
 .btns{display:flex;gap:10px;flex-wrap:wrap;margin-block:18px}
+.btns[hidden]{display:none}
+.trust{font-size:15px;color:var(--soft);margin:-6px 0 10px}
 .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 22px;border:0;border-radius:999px;font:600 16px var(--text);cursor:pointer;text-decoration:none}
 .btn.primary{background:var(--up);color:var(--up-ink)}
 .btn.ghost{background:var(--raised);color:var(--ink)}
@@ -31,22 +34,27 @@
 </header>
 <main id="main">
   <h1>Add these wallets to Bagscope</h1>
-  <p id="intro">Someone, probably you on another PC, shared a list of wallets with you.</p>
+  <p id="intro">This link carries a wallet list, most likely from your own Bagscope on another PC.</p>
+  <noscript><p class="status">This page needs JavaScript to read the wallet list from the link. Without it, open Bagscope, go to Wallets, and paste the whole link under "Move your wallets to another PC".</p></noscript>
   <div class="list" id="list" aria-live="polite"></div>
   <div class="btns" id="actions" hidden>
     <a class="btn primary" id="open" href="#">Open in Bagscope</a>
     <button class="btn ghost" id="copy" type="button">Copy code</button>
   </div>
+  <p class="trust">Only public addresses. Nothing leaves this page.</p>
   <p class="status" id="status" role="status"></p>
   <div class="box">
     <p><b>Nothing leaves this page.</b> The wallet list is in the part of the link after "#", which your browser never sends to any website. This page only reads it and passes it to the Bagscope app on this PC. Only public addresses are included, never keys.</p>
     <p>If "Open in Bagscope" does nothing, open Bagscope, go to Wallets, and paste the code under "Move your wallets to another PC".</p>
-    <p>No Bagscope on this PC yet? <a href="../">Download it free</a>, then open this link again.</p>
+    <p>No Bagscope on this PC yet? <a href="../#install">Download it free</a>, then open this link again.</p>
   </div>
 </main>
 <footer>
-  <a href="../privacy/">Privacy policy</a>
-  <a href="../terms/">Terms of use</a>
+  <nav class="legal-nav" aria-label="Legal">
+    <a href="../">Back to the home page</a>
+    <a href="../privacy/">Privacy policy</a>
+    <a href="../terms/">Terms of use</a>
+  </nav>
 </footer>
 <script>
 (function () {
@@ -75,9 +83,16 @@
     txt.append(name, addr); row.append(dot, txt); list.append(row); shown++;
   });
   if (!shown) return fail('This link holds no valid wallet addresses.');
-  document.getElementById('intro').textContent = shown === 1 ? '1 wallet was shared with you.' : shown + ' wallets were shared with you.';
+  document.getElementById('intro').textContent = (shown === 1 ? '1 wallet is in this link' : shown + ' wallets are in this link') + ', most likely from your own Bagscope on another PC.';
   document.getElementById('actions').hidden = false;
-  document.getElementById('open').href = 'bagscope://add/' + code;
+  var openLink = document.getElementById('open');
+  openLink.href = 'bagscope://add/' + code;
+  openLink.addEventListener('click', function () {
+    setTimeout(function () {
+      status.textContent = 'If Bagscope did not open: open Bagscope, go to Wallets, and paste the code under "Move your wallets to another PC". No Bagscope on this PC yet? Use the download link below.';
+      status.className = 'status';
+    }, 1500);
+  });
   document.getElementById('copy').addEventListener('click', function () {
     navigator.clipboard.writeText(code).then(function () { status.textContent = 'Code copied. Paste it in Bagscope under Wallets.'; }, function () { status.textContent = 'Copying was blocked. Use "Open in Bagscope" instead.'; });
   });
